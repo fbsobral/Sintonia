@@ -1,0 +1,52 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CycleMode {
+  D28
+  D31
+  IRREGULAR
+}
+
+model User {
+  id          String   @id @default(cuid())
+  clerkId     String   @unique
+  email       String
+  emailDaily  Boolean  @default(true)
+  sendHour    Int      @default(8)
+  timezone    String   @default("America/Sao_Paulo")
+  lastEmailOn String? // YYYY-MM-DD do último envio diário
+  createdAt   DateTime @default(now())
+  partner     Partner?
+}
+
+model Partner {
+  id           String    @id @default(cuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  birthDate    DateTime  @db.Date
+  birthTime    String? // HH:mm (opcional)
+  cycleMode    CycleMode @default(D28)
+  periodLength Int       @default(5)
+  cycles       Cycle[]
+  createdAt    DateTime  @default(now())
+}
+
+model Cycle {
+  id        String    @id @default(cuid())
+  partnerId String
+  partner   Partner   @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  startDate DateTime  @db.Date
+  endDate   DateTime? @db.Date
+  createdAt DateTime  @default(now())
+
+  @@unique([partnerId, startDate])
+  @@index([partnerId, startDate])
+}

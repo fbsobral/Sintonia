@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0f0d1f;
+  --surface: #1a1730;
+  --surface-2: #231f3d;
+  --line: #ffffff14;
+  --text: #edeaf7;
+  --muted: #9a95b8;
+  --accent: #b9a8ff;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, serif;
+}
+
+html { color-scheme: dark; -webkit-tap-highlight-color: transparent; }
+body {
+  background: radial-gradient(120% 60% at 50% -10%, #2a2160 0%, var(--bg) 55%) no-repeat, var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  min-height: 100dvh;
+}
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 1.25rem; }
+.field {
+  width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: .85rem;
+  padding: .85rem 1rem; font-size: 16px; color: var(--text); outline: none;
+}
+.field:focus { border-color: var(--accent); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  background: var(--text); color: var(--bg); font-weight: 700; border-radius: 999px;
+  padding: .9rem 1.4rem; min-height: 48px; transition: transform .15s;
+}
+.btn:active { transform: scale(.97); }
+.btn-ghost { background: var(--surface-2); color: var(--text); border: 1px solid var(--line); }
+.pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 6.5rem); }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise .45s ease both; }
+@media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
