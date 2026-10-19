@@ -33,6 +33,8 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
         <p className="text-sm text-muted">Registre cada menstruação. O Sintonia aprende o ritmo dela.</p>
       </header>
 
+      <div className="space-y-5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0">
+      <div className="space-y-5">
       <section className="rise card p-5">
         <div className="flex items-baseline justify-between">
           <div>
@@ -81,6 +83,8 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
         </ul>
       </section>
 
+      </div>
+      <div className="space-y-5">
       <section className="rise card p-5">
         <h2 className="font-display text-xl">Registrar menstruação</h2>
         <form action={addCycle} className="mt-3 space-y-3">
@@ -117,6 +121,8 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
           })}
         </ul>
       </section>
+      </div>
+      </div>
     </main>
   );
 }

@@ -14,6 +14,7 @@ export default async function Perfil() {
         <UserButton />
       </header>
 
+      <div className="space-y-5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0">
       <section className="rise card p-5">
         <h2 className="font-display text-xl">E-mail diário</h2>
         <p className="text-sm text-muted">Enviado para {user.email || "seu e-mail"} com o momento dela e como conduzir o dia.</p>
@@ -42,6 +43,7 @@ export default async function Perfil() {
           <button className="btn w-full">Salvar alterações</button>
         </form>
       </section>
+      </div>
     </main>
   );
 }

@@ -38,6 +38,8 @@ export default async function Hoje() {
         </div>
       </header>
 
+      <div className="space-y-5 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-start lg:gap-5 lg:space-y-0">
+      <div className="space-y-5 lg:sticky lg:top-8">
       <section className="rise card px-5 py-6" style={{ background: `linear-gradient(180deg, ${p.soft}, var(--surface))`, borderColor: `${p.color}55` }}>
         <Ring length={s.profile.length} ranges={s.ranges} day={s.cycleDay}>
           <span className="text-xs uppercase tracking-widest text-muted">Dia</span>
@@ -56,6 +58,18 @@ export default async function Hoje() {
         </div>
       </section>
 
+      <section className="rise card p-5">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-muted">Céu de hoje</h2>
+        <p className="mt-2">{sky.moonPhase} em {sky.moonSign} · {sky.illumination}% iluminada</p>
+        <p className="mt-1 text-sm text-muted">
+          {sky.moonSign === moon
+            ? `A Lua de hoje está no signo lunar dela (${moon}): emoções em evidência.`
+            : `Lua dela em ${moon}. ${SIGN_INFO[moon].moon}`}
+        </p>
+      </section>
+      </div>
+
+      <div className="space-y-5">
       <section className="rise card p-5">
         <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: p.color }}>Dica do dia</h2>
         <p className="mt-2 text-lg leading-snug">{tip}</p>
@@ -78,7 +92,7 @@ export default async function Hoje() {
         </div>
       </section>
 
-      <div className="rise grid grid-cols-1 gap-3">
+      <div className="rise grid grid-cols-1 gap-3 sm:grid-cols-2">
         <section className="card p-5">
           <h2 className="text-xs font-bold uppercase tracking-widest text-emerald-300">Faça</h2>
           <ul className="mt-2 space-y-2 text-[15px]">{p.do.map((x) => <li key={x} className="flex gap-2"><span aria-hidden>✓</span><span>{x}</span></li>)}</ul>
@@ -104,16 +118,8 @@ export default async function Hoje() {
         </ol>
         <Link href="/ciclos" className="mt-3 inline-block text-sm text-accent">Ver calendário completo →</Link>
       </section>
-
-      <section className="rise card p-5">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-muted">Céu de hoje</h2>
-        <p className="mt-2">{sky.moonPhase} em {sky.moonSign} · {sky.illumination}% iluminada</p>
-        <p className="mt-1 text-sm text-muted">
-          {sky.moonSign === moon
-            ? `A Lua de hoje está no signo lunar dela (${moon}): emoções em evidência.`
-            : `Lua dela em ${moon}. ${SIGN_INFO[moon].moon}`}
-        </p>
-      </section>
+      </div>
+      </div>
 
       <p className="px-2 pb-2 text-center text-xs text-muted">
         Estimativa com ciclo de {s.profile.length} dias ({s.profile.source === "media" ? "média dos ciclos registrados" : "ritmo informado"}). Cada pessoa é única: observe, pergunte e converse.

@@ -29,7 +29,7 @@ export default async function Astro() {
         </p>
       </header>
 
-      <div className="rise space-y-3">
+      <div className="rise grid gap-3 sm:grid-cols-2">
         {rows.map((r) => (
           <section key={r.k} className="card p-5">
             <div className="flex items-baseline justify-between">
@@ -42,6 +42,7 @@ export default async function Astro() {
         ))}
       </div>
 
+      <div className="grid gap-5 md:grid-cols-2">
       <section className="rise card p-5">
         <h2 className="text-xs font-bold uppercase tracking-widest text-muted">Elemento dominante</h2>
         <p className="font-display mt-1 text-2xl">{topEl}</p>
@@ -60,6 +61,8 @@ export default async function Astro() {
         <p className="mt-1">{sky.moonPhase} em {sky.moonSign}</p>
         <p className="mt-1 text-sm text-muted">{SIGN_INFO[sky.moonSign].moon}</p>
       </section>
+
+      </div>
 
       <p className="px-2 text-center text-xs text-muted">
         {c.approx ? "Sem a hora de nascimento, Lua e Vênus são aproximadas (calculadas para o meio-dia). " : ""}

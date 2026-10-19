@@ -12,18 +12,22 @@ const TABS = [
   { href: "/perfil", label: "Perfil", icon: I("M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0") },
 ];
 
+/** Barra inferior no celular; barra lateral a partir de md. */
 export function TabBar() {
   const path = usePathname();
   return (
-    <nav aria-label="Principal" className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-[#120f26]/90 backdrop-blur-xl" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
-      <ul className="mx-auto flex max-w-md">
+    <nav aria-label="Principal"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-[#120f26]/90 backdrop-blur-xl md:inset-y-0 md:right-auto md:w-60 md:border-r md:border-t-0 md:bg-[#120f26]/70 md:px-4 md:py-8"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <Link href="/hoje" className="font-display mb-8 hidden px-3 text-2xl tracking-wide md:block">Sintonia</Link>
+      <ul className="mx-auto flex max-w-md md:max-w-none md:flex-col md:gap-1">
         {TABS.map((t) => {
           const on = path.startsWith(t.href);
           return (
-            <li key={t.href} className="flex-1">
+            <li key={t.href} className="flex-1 md:flex-none">
               <Link href={t.href} aria-current={on ? "page" : undefined}
-                className={`flex min-h-[58px] flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors ${on ? "text-ink" : "text-muted"}`}>
-                <span className={`rounded-full px-4 py-1 transition-colors ${on ? "bg-white/10" : ""}`}>{t.icon}</span>
+                className={`flex min-h-[58px] flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors md:min-h-[48px] md:flex-row md:justify-start md:gap-3 md:rounded-xl md:px-3 md:text-[15px] md:hover:bg-white/5 ${on ? "text-ink md:bg-white/10" : "text-muted"}`}>
+                <span className={`rounded-full px-4 py-1 transition-colors md:p-0 ${on ? "bg-white/10 md:bg-transparent" : ""}`}>{t.icon}</span>
                 {t.label}
               </Link>
             </li>
