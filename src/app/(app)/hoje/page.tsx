@@ -72,7 +72,7 @@ export default async function Hoje({ searchParams }: { searchParams: Promise<{ d
   }
 
   const p = PHASES[s.phase];
-  const st = stageFor(s.phase, s.phaseDay, s.phaseLength, s.pms);
+  const st = stageFor(s.phase, s.phaseDay, s.phaseLength);
   const tip = dayTip(s.phase, s.phaseDay, s.pms, s.phaseLength);
   const talk = pick(p.talk, toDay(sel));
   const week = timeline(profile, sel, 7);

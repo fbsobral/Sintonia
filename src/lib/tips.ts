@@ -259,20 +259,44 @@ export const STAGES: Record<PhaseKey, Stage[]> = {
   ],
   lutea: [
     {
-      name: "Começo estável",
-      mood: "Humor estável e foco. Boa fase para rotina, tarefas e planos práticos.",
-      body: "A progesterona sobe: mais calma, mas o corpo já pede conforto.",
+      name: "Entrando na lútea",
+      mood: "Fase de transição: ainda sobra energia do pico, mas o humor já pode começar a oscilar com a progesterona subindo.",
+      body: "O corpo segue disposto, e os primeiros sinais de mudança são sutis.",
       energy: 4,
-      do: ["Resolva pendências da casa e da vida a dois", "Mantenha a rotina previsível", "Programe algo tranquilo para os próximos dias"],
-      avoid: ["Encher a agenda de compromissos", "Adiar conversas importantes para os últimos dias do ciclo"],
+      do: ["Aproveite a energia que ainda resta para programas a dois", "Observe sem comentar: pequenas mudanças de humor já podem aparecer", "Mantenha a rotina previsível"],
+      avoid: ["Assumir que o ritmo do pico vai continuar igual", "Encher a agenda de compromissos"],
+    },
+    {
+      name: "Foco e calma",
+      mood: "Mais voltada para dentro: foco, organização e vontade de resolver pendências.",
+      body: "Com a progesterona alta vêm mais calma e, às vezes, mais sono.",
+      energy: 4,
+      do: ["Resolva pendências da casa e da vida a dois", "Prefira programas tranquilos e previsíveis", "Reconheça o que ela entrega no dia a dia"],
+      avoid: ["Cobrar sociabilidade o tempo todo", "Mudar planos em cima da hora"],
+    },
+    {
+      name: "Humor começando a oscilar",
+      mood: "O humor pode alternar entre leve e irritado. Pequenas coisas começam a incomodar mais.",
+      body: "Cansaço, sono mais leve e apetite maior são comuns.",
+      energy: 3,
+      do: ["Seja flexível: um dia ela pode estar leve e no outro mais sensível", "Pergunte como ela está, sem pressionar", "Tenha em casa o que ela gosta"],
+      avoid: ["Levar a mudança de humor para o lado pessoal", "Tentar corrigir o humor dela"],
     },
     {
       name: "Sensibilidade crescendo",
       mood: "A sensibilidade aumenta, assim como a necessidade de conforto e de previsibilidade.",
       body: "Podem surgir inchaço, vontade de comer doce e sono ruim.",
       energy: 3,
-      do: ["Ouça mais e proponha menos", "Tenha em casa o que ela gosta, sem comentar", "Facilite a noite: ambiente calmo e sem discussão antes de dormir"],
+      do: ["Ouça mais e proponha menos", "Facilite a noite: ambiente calmo e sem discussão antes de dormir", "Ofereça ajuda concreta antes de ela pedir"],
       avoid: ["Mudanças de última hora", "Comentar o corpo ou o humor dela", "Debater a relação"],
+    },
+    {
+      name: "Pré-TPM",
+      mood: "A irritabilidade e a vontade de ficar quieta crescem. Ela pode se sentir mais cobrada ou menos compreendida.",
+      body: "Inchaço, sensibilidade nas mamas e vontade de doce ficam mais fortes.",
+      energy: 3,
+      do: ["Reduza a carga dela: menos tarefas e menos decisões", "Seja direto e gentil, sem ironia", "Ofereça colo ou silêncio, o que ela preferir"],
+      avoid: ["Cobranças e críticas", "Discussões sobre a relação", "Programas que exigem muita energia"],
     },
     {
       name: "Reta final (TPM)",
@@ -285,9 +309,8 @@ export const STAGES: Record<PhaseKey, Stage[]> = {
   ],
 };
 
-export function stageFor(phase: PhaseKey, phaseDay: number, phaseLength: number, pms: boolean): Stage {
+export function stageFor(phase: PhaseKey, phaseDay: number, phaseLength: number): Stage {
   const st = STAGES[phase];
-  if (pms && phase === "lutea") return st[st.length - 1];
   const raw = phaseLength > 0 ? Math.floor(((phaseDay - 1) / phaseLength) * st.length) : 0;
   return st[Math.min(Math.max(Number.isFinite(raw) ? raw : 0, 0), st.length - 1)];
 }

@@ -7,7 +7,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 export function buildDailyEmail(partnerName: string, s: Status, today: string) {
   const p = PHASES[s.phase];
   const seed = toDay(today);
-  const st = stageFor(s.phase, s.phaseDay, s.phaseLength, s.pms);
+  const st = stageFor(s.phase, s.phaseDay, s.phaseLength);
   const tip = dayTip(s.phase, s.phaseDay, s.pms, s.phaseLength);
   const talk = pick(p.talk, seed);
   const li = (items: string[]) => items.slice(0, 2).map((i) => `<li style="margin:0 0 6px">${i}</li>`).join("");
