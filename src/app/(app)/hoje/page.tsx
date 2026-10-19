@@ -5,7 +5,7 @@ import { PHASES, pick, stageFor } from "@/lib/tips";
 import { chartFor, skyToday } from "@/lib/astro";
 import { Ring } from "@/components/Ring";
 import { Icon } from "@/components/Icon";
-import { fmt } from "@/lib/format";
+import { fmt, short, shortRange } from "@/lib/format";
 import { skyReading } from "@/lib/sky";
 
 export const metadata = { title: "Hoje" };
@@ -93,7 +93,7 @@ export default async function Hoje({ searchParams }: { searchParams: Promise<{ d
   const forecast = offset > 0 || s.projected;
   const total = Math.max(s.profile.length, s.cycleDay);
   const [r0, r1] = s.nextRange;
-  const nextText = s.daysToPeriod <= 0 ? "prevista para este dia" : r0 !== r1 ? `entre ${fmt(r0)} e ${fmt(r1)}` : fmt(s.nextPeriod);
+  const nextText = s.daysToPeriod <= 0 ? "Neste dia" : r0 !== r1 ? shortRange(r0, r1) : short(s.nextPeriod);
   const fertColor = s.fertility === "muito alta" ? "#F2B134" : s.fertility === "alta" ? "#e6c35c" : "#9a95b8";
 
   return (
@@ -117,13 +117,13 @@ export default async function Hoje({ searchParams }: { searchParams: Promise<{ d
               <span className="inline-block rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider" style={{ background: `${p.color}26`, color: p.color }}>
                 Fase {p.name}{s.pms ? " · janela de TPM" : ""}
               </span>
-              <p className="font-display mt-1.5 text-xl sm:mt-2 sm:text-2xl">{p.tagline}</p>
+              <p className="balance font-display mt-1.5 text-xl sm:mt-2 sm:text-2xl">{p.tagline}</p>
               {forecast && <p className="mt-1 text-xs text-muted">Previsão a partir da média dos ciclos registrados.</p>}
               <div className="mt-3 grid grid-cols-2 gap-2 text-left sm:mt-5">
-                <div className="flex items-center gap-2.5 rounded-2xl bg-black/25 p-2.5 sm:p-3"><Icon name="drop" size={18} className="shrink-0 text-rose" /><div><p className="text-[10px] uppercase tracking-wider text-muted">Próxima menstruação</p><p className="text-sm font-semibold">{nextText}</p></div></div>
+                <div className="flex items-center gap-2.5 rounded-2xl bg-black/25 p-2.5 sm:p-3"><Icon name="drop" size={18} className="shrink-0 text-rose" /><div><p className="text-[10px] uppercase tracking-wider text-muted">Próxima menstruação</p><p className="whitespace-nowrap text-sm font-semibold">{nextText}</p></div></div>
                 <div className="flex items-center gap-2.5 rounded-2xl bg-black/25 p-2.5 sm:p-3"><Icon name="spark" size={18} className="shrink-0" style={{ color: fertColor }} /><div><p className="text-[10px] uppercase tracking-wider text-muted">Fertilidade</p><p className="text-sm font-semibold capitalize">{s.fertility}</p></div></div>
               </div>
-              <p className="mt-2 text-[11px] text-muted">Ovulação estimada em {fmt(s.ovulationDate)}</p>
+              <p className="mt-2 text-[11px] text-muted">Ovulação estimada em {short(s.ovulationDate)}{r0 !== r1 ? ` · margem de ±${s.profile.margin} dia${s.profile.margin > 1 ? "s" : ""}` : ""}</p>
             </div>
           </section>
         </div>

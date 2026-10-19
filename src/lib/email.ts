@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import { PHASES, pick, stageFor } from "./tips";
 import { toDay, type Status } from "./cycle";
-import { fmt } from "./format";
+import { short, shortRange } from "./format";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
@@ -14,8 +14,8 @@ export function buildDailyEmail(partnerName: string, s: Status, today: string) {
   const [r0, r1] = s.nextRange;
   const next =
     s.daysToPeriod <= 0 ? "A menstruação está prevista para hoje." :
-    r0 !== r1 ? `Próxima menstruação prevista entre ${fmt(r0)} e ${fmt(r1)}.` :
-    `Próxima menstruação prevista para ${fmt(s.nextPeriod)}.`;
+    r0 !== r1 ? `Próxima menstruação prevista entre ${shortRange(r0, r1).replace(" – ", " e ")}.` :
+    `Próxima menstruação prevista para ${short(s.nextPeriod)}.`;
   const fert = s.fertility === "baixa" ? "" : ` Fertilidade ${s.fertility}: se não planejam gravidez, usem proteção.`;
   const html = `<!doctype html><html><body style="margin:0;background:#0F0D1F;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#EDEAF7">
 <div style="max-width:540px;margin:0 auto;padding:28px 20px">

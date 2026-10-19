@@ -101,3 +101,7 @@ body > * { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
   .rise, .pop, .float, .orb-wrap, .orb > span, .orbit-core::after, .star { animation: none !important; }
 }
+
+/* Quebras de linha mais equilibradas: sem palavras órfãs em títulos e frases */
+h1, h2, h3, .balance { text-wrap: balance; }
+p, li, dd { text-wrap: pretty; }
