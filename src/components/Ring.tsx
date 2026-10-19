@@ -9,7 +9,7 @@ export function Ring({ length, ranges, day, children }: { length: number; ranges
   const ang = (d: number) => ((d - 1) / length) * 2 * Math.PI - Math.PI / 2;
   const mid = ang(day + 0.5);
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[300px]">
+    <div className="relative mx-auto aspect-square w-full max-w-[200px] min-[400px]:max-w-[230px] sm:max-w-[300px]">
       <svg viewBox="0 0 220 220" className="h-full w-full -rotate-0" role="img" aria-label={`Dia ${day} de ${length} do ciclo`}>
         {ORDER.map((k) => {
           const [a, b] = ranges[k];

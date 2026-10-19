@@ -174,3 +174,120 @@ export function dayTip(phase: PhaseKey, phaseDay: number, pms: boolean, phaseLen
 export function pick<T>(arr: T[], seed: number) {
   return arr[Math.abs(seed) % arr.length];
 }
+
+export type Stage = { name: string; mood: string; body: string; energy: number; do: string[]; avoid: string[] };
+
+/** Cada fase se divide em momentos; o conteúdo muda ao longo dos dias, não só entre fases. */
+export const STAGES: Record<PhaseKey, Stage[]> = {
+  menstrual: [
+    {
+      name: "Fluxo mais intenso",
+      mood: "Cansaço e introspecção no auge. Ela precisa de colo e de pouca exigência.",
+      body: "Cólica e dor lombar costumam ser mais fortes, com fluxo mais intenso.",
+      energy: 1,
+      do: ["Pergunte do que ela precisa e resolva sem ser pedido: comida, remédio, casa", "Bolsa térmica, chá quente e um ambiente quieto", "Simplifique ou cancele compromissos que dão trabalho"],
+      avoid: ["Cobrar disposição ou planos animados", "Puxar assuntos pesados", "Minimizar a dor com “é normal”"],
+    },
+    {
+      name: "Fluxo diminuindo",
+      mood: "Ainda recolhida, mas o humor começa a melhorar.",
+      body: "As cólicas aliviam e o fluxo reduz, embora o cansaço persista.",
+      energy: 2,
+      do: ["Convide para algo tranquilo, como um filme ou jantar em casa", "Elogie de forma sincera: a autoestima está sensível", "Divida as tarefas da casa sem ela pedir"],
+      avoid: ["Forçar programa cheio de gente", "Cobrar o ritmo de sempre", "Fazer piada com o humor dela"],
+    },
+    {
+      name: "Fim da menstruação",
+      mood: "A energia volta e o humor melhora. Ela tende a querer se reconectar.",
+      body: "O corpo fica mais leve, com menos dor e menos inchaço.",
+      energy: 3,
+      do: ["Sugira uma caminhada ou uma saída leve", "Planeje algo especial para os próximos dias", "Retome conversas que ficaram em espera"],
+      avoid: ["Atropelar o ritmo dela com empolgação demais", "Pressionar por intimidade se ela não demonstrar vontade"],
+    },
+  ],
+  folicular: [
+    {
+      name: "Energia subindo",
+      mood: "O humor fica leve e a vontade de fazer coisas novas começa a aparecer.",
+      body: "O estrogênio sobe: mais disposição e pele melhor.",
+      energy: 3,
+      do: ["Proponha algo novo: restaurante, passeio ou um curso a dois", "Apoie as ideias dela com entusiasmo", "Retome planos que ficaram parados"],
+      avoid: ["Cair na rotina e deixar os dias passarem sem novidade", "Descartar as ideias dela de primeira"],
+    },
+    {
+      name: "Fase de brilho",
+      mood: "Criativa, sociável e confiante. A cabeça está aberta para planos e decisões.",
+      body: "A disposição é alta e a libido começa a crescer.",
+      energy: 4,
+      do: ["Converse sobre planos, viagens e decisões importantes", "Marquem com amigos ou com outros casais", "Atividade física a dois: dança, corrida leve ou trilha"],
+      avoid: ["Adiar conversas sérias que ela está aberta para ter", "Ficar só no sofá em casa"],
+    },
+    {
+      name: "Perto da ovulação",
+      mood: "Confiança em alta e mais flerte. O clima de conexão está chegando.",
+      body: "O estrogênio está perto do pico, com energia e libido altas.",
+      energy: 5,
+      do: ["Invista no flerte: mensagem criativa, elogio e atenção", "Reserve a agenda para um encontro de verdade", "Alinhem a proteção, porque a janela fértil está perto"],
+      avoid: ["Passar os dias sem tempo de qualidade", "Deixar a contracepção para a última hora"],
+    },
+  ],
+  ovulatoria: [
+    {
+      name: "Janela fértil começando",
+      mood: "Comunicativa, afetuosa e mais confiante.",
+      body: "Pico de estrogênio e início da fase fértil.",
+      energy: 5,
+      do: ["Faça um encontro de verdade: jantar ou saída a dois, celular longe da mesa", "Elogie e demonstre desejo com carinho e respeito", "Se não planejam gravidez, combinem a proteção"],
+      avoid: ["Passar a janela fértil sem alinhar a contracepção", "Deixar o encontro de lado por cansaço seu"],
+    },
+    {
+      name: "Pico do ciclo",
+      mood: "Auge de energia, sociabilidade e desejo.",
+      body: "Dia da ovulação: a libido costuma estar no máximo.",
+      energy: 5,
+      do: ["Faça deste dia um momento marcante a dois", "Dê atenção total e escute com curiosidade", "Reforce a proteção se não querem gravidez"],
+      avoid: ["Marcar compromissos que roubam o tempo de vocês", "Tratar o dia como qualquer outro"],
+    },
+    {
+      name: "Fim do pico",
+      mood: "Ainda afetuosa, com a energia começando a baixar.",
+      body: "Os hormônios mudam de direção e o corpo começa a desacelerar.",
+      energy: 4,
+      do: ["Termine a fase com um gesto de carinho", "Aproveite para conversar de coração aberto", "Comece a diminuir o ritmo dos programas"],
+      avoid: ["Cobrar a mesma energia dos dias anteriores", "Ignorar sinais de cansaço"],
+    },
+  ],
+  lutea: [
+    {
+      name: "Começo estável",
+      mood: "Humor estável e foco. Boa fase para rotina, tarefas e planos práticos.",
+      body: "A progesterona sobe: mais calma, mas o corpo já pede conforto.",
+      energy: 4,
+      do: ["Resolva pendências da casa e da vida a dois", "Mantenha a rotina previsível", "Programe algo tranquilo para os próximos dias"],
+      avoid: ["Encher a agenda de compromissos", "Adiar conversas importantes para os últimos dias do ciclo"],
+    },
+    {
+      name: "Sensibilidade crescendo",
+      mood: "A sensibilidade aumenta, assim como a necessidade de conforto e de previsibilidade.",
+      body: "Podem surgir inchaço, vontade de comer doce e sono ruim.",
+      energy: 3,
+      do: ["Ouça mais e proponha menos", "Tenha em casa o que ela gosta, sem comentar", "Facilite a noite: ambiente calmo e sem discussão antes de dormir"],
+      avoid: ["Mudanças de última hora", "Comentar o corpo ou o humor dela", "Debater a relação"],
+    },
+    {
+      name: "Reta final (TPM)",
+      mood: "Mais irritável e sensível. Pequenas coisas pesam mais.",
+      body: "Com a queda hormonal, aparecem sensibilidade nas mamas, cansaço e humor instável.",
+      energy: 2,
+      do: ["Seja o ponto de calma: tom baixo, paciência e bom humor", "Ouça sem tentar resolver tudo", "Gestos pequenos: um café, um bilhete, flores"],
+      avoid: ["Debater a relação ou fazer críticas", "Reagir à irritação com mais irritação", "Dizer “você está assim por causa da TPM”"],
+    },
+  ],
+};
+
+export function stageFor(phase: PhaseKey, phaseDay: number, phaseLength: number, pms: boolean): Stage {
+  const st = STAGES[phase];
+  if (pms && phase === "lutea") return st[st.length - 1];
+  const raw = phaseLength > 0 ? Math.floor(((phaseDay - 1) / phaseLength) * st.length) : 0;
+  return st[Math.min(Math.max(Number.isFinite(raw) ? raw : 0, 0), st.length - 1)];
+}

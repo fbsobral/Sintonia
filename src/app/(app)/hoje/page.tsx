@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requirePartner } from "@/lib/session";
 import { fromDay, statusOn, timeline, toDay } from "@/lib/cycle";
-import { PHASES, dayTip, pick } from "@/lib/tips";
+import { PHASES, dayTip, pick, stageFor } from "@/lib/tips";
 import { chartFor, skyToday } from "@/lib/astro";
 import { Ring } from "@/components/Ring";
 import { Icon } from "@/components/Icon";
@@ -30,7 +30,7 @@ export default async function Hoje({ searchParams }: { searchParams: Promise<{ d
   const nav = (
     <div className="rise space-y-3">
       <div className="flex items-center gap-2">
-        <Link href={href(fromDay(toDay(sel) - 1), today)} replace scroll={false} aria-label="Dia anterior" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/5 hover:bg-white/10"><Icon name="arrow" className="rotate-180" /></Link>
+        <Link href={href(fromDay(toDay(sel) - 1), today)} replace scroll={false} aria-label="Dia anterior" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/5 hover:bg-white/10"><Icon name="arrow" size={18} className="rotate-180" /></Link>
         <ol className="flex flex-1 gap-1">
           {strip.map((day) => {
             const c = cells.get(day);
@@ -39,7 +39,7 @@ export default async function Hoje({ searchParams }: { searchParams: Promise<{ d
             return (
               <li key={day} className="min-w-0 flex-1">
                 <Link href={href(day, today)} replace scroll={false} aria-current={on ? "date" : undefined}
-                  className={`flex flex-col items-center gap-1 rounded-2xl py-2 text-center transition ${on ? "bg-white/15 shadow-[0_0_24px_-6px_#bfb0ff]" : "hover:bg-white/5"}`}>
+                  className={`flex flex-col items-center gap-0.5 rounded-2xl py-1.5 text-center transition ${on ? "bg-white/15 shadow-[0_0_24px_-6px_#bfb0ff]" : "hover:bg-white/5"}`}>
                   <span className="text-[10px] uppercase text-muted">{day === today ? "hoje" : fmt(day, { weekday: "short" }).replace(".", "")}</span>
                   <span className={`text-base font-semibold ${on ? "text-ink" : "text-muted"}`}>{Number(day.slice(8))}</span>
                   <span className="h-1.5 w-1.5 rounded-full" style={{ background: col }} />
@@ -48,7 +48,7 @@ export default async function Hoje({ searchParams }: { searchParams: Promise<{ d
             );
           })}
         </ol>
-        <Link href={href(fromDay(toDay(sel) + 1), today)} replace scroll={false} aria-label="Próximo dia" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/5 hover:bg-white/10"><Icon name="arrow" /></Link>
+        <Link href={href(fromDay(toDay(sel) + 1), today)} replace scroll={false} aria-label="Próximo dia" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/5 hover:bg-white/10"><Icon name="arrow" size={18} /></Link>
       </div>
       {!isToday && (
         <div className="flex justify-center">
@@ -72,6 +72,7 @@ export default async function Hoje({ searchParams }: { searchParams: Promise<{ d
   }
 
   const p = PHASES[s.phase];
+  const st = stageFor(s.phase, s.phaseDay, s.phaseLength, s.pms);
   const tip = dayTip(s.phase, s.phaseDay, s.pms, s.phaseLength);
   const talk = pick(p.talk, toDay(sel));
   const week = timeline(profile, sel, 7);
@@ -82,36 +83,72 @@ export default async function Hoje({ searchParams }: { searchParams: Promise<{ d
   const total = Math.max(s.profile.length, s.cycleDay);
 
   return (
-    <main className="space-y-5">
+    <main className="space-y-3 sm:space-y-5">
       <header className="rise">
         <p className="eyebrow">{isToday ? fmt(sel, { weekday: "long", day: "numeric", month: "long" }) : fmt(sel, { year: "numeric", day: "numeric", month: "long" })}</p>
-        <h1 className="font-display mt-1 text-4xl leading-tight">{label} com <span className="text-grad">{partner.name}</span></h1>
+        <h1 className="font-display mt-0.5 text-3xl leading-tight sm:mt-1 sm:text-4xl">{label} com <span className="text-grad">{partner.name}</span></h1>
       </header>
 
       {nav}
 
       <div className="space-y-5 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-start lg:gap-5 lg:space-y-0">
         <div className="space-y-5 lg:sticky lg:top-8">
-          <section className="rise card relative overflow-hidden px-5 py-7" style={{ background: `radial-gradient(90% 60% at 50% 0%, ${p.color}40, transparent 70%), linear-gradient(180deg, ${p.soft}, #17142b)`, borderColor: `${p.color}55`, boxShadow: `0 30px 70px -40px ${p.color}` }}>
+          <section className="rise card relative overflow-hidden px-4 py-4 sm:px-5 sm:py-7" style={{ background: `radial-gradient(90% 60% at 50% 0%, ${p.color}40, transparent 70%), linear-gradient(180deg, ${p.soft}, #17142b)`, borderColor: `${p.color}55`, boxShadow: `0 30px 70px -40px ${p.color}` }}>
             <Ring length={total} ranges={s.ranges} day={s.cycleDay}>
               <span className="text-xs uppercase tracking-widest text-muted">Dia</span>
-              <span className="font-display text-6xl leading-none">{s.cycleDay}</span>
+              <span className="font-display text-5xl leading-none sm:text-6xl">{s.cycleDay}</span>
               <span className="mt-1 text-sm text-muted">de {total}</span>
             </Ring>
-            <div className="mt-5 text-center">
+            <div className="mt-3 text-center sm:mt-5">
               <span className="inline-block rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider" style={{ background: `${p.color}26`, color: p.color }}>
                 Fase {p.name}{s.pms ? " · atenção TPM" : ""}
               </span>
-              <p className="font-display mt-2 text-2xl">{p.tagline}</p>
+              <p className="font-display mt-1.5 text-xl sm:mt-2 sm:text-2xl">{p.tagline}</p>
               <p className="mt-1 text-sm text-muted">
                 {s.daysToPeriod <= 0 ? "Menstruação prevista para este dia" : `Próxima menstruação ${inDays(s.daysToPeriod)} · ${fmt(s.nextPeriod)}`}
               </p>
               {forecast && <p className="mt-2 text-xs text-muted">Previsão baseada na média dos ciclos registrados.</p>}
-              <div className="mt-5 grid grid-cols-2 gap-2 text-left">
-                <div className="rounded-2xl bg-black/25 p-3"><Icon name="drop" size={16} className="text-rose" /><p className="mt-1 text-[11px] uppercase tracking-wider text-muted">Menstruação</p><p className="font-semibold">{fmt(s.nextPeriod)}</p></div>
-                <div className="rounded-2xl bg-black/25 p-3"><Icon name="spark" size={16} className="text-[#F2B134]" /><p className="mt-1 text-[11px] uppercase tracking-wider text-muted">Ovulação</p><p className="font-semibold">{fmt(s.ovulationDate)}</p></div>
+              <div className="mt-3 grid grid-cols-2 gap-2 text-left sm:mt-5">
+                <div className="flex items-center gap-2.5 rounded-2xl bg-black/25 p-2.5 sm:p-3"><Icon name="drop" size={18} className="shrink-0 text-rose" /><div><p className="text-[10px] uppercase tracking-wider text-muted">Menstruação</p><p className="text-sm font-semibold">{fmt(s.nextPeriod)}</p></div></div>
+                <div className="flex items-center gap-2.5 rounded-2xl bg-black/25 p-2.5 sm:p-3"><Icon name="spark" size={18} className="shrink-0 text-[#F2B134]" /><div><p className="text-[10px] uppercase tracking-wider text-muted">Ovulação</p><p className="text-sm font-semibold">{fmt(s.ovulationDate)}</p></div></div>
               </div>
             </div>
+          </section>
+
+        </div>
+
+        <div className="space-y-5">
+          <section className="rise card p-5">
+            <div className="flex items-center justify-between gap-2"><h2 className="eyebrow">Como ela pode estar</h2><span className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold" style={{ background: `${p.color}26`, color: p.color }}>{st.name}</span></div>
+            <p className="mt-2">{st.mood}</p>
+            <p className="mt-2 text-sm text-muted">{st.body}</p>
+            <div className="mt-3 flex items-center gap-1" aria-label={`Energia ${st.energy} de 5`}>
+              {[1, 2, 3, 4, 5].map((i) => (
+                <span key={i} className="h-2 flex-1 rounded-full" style={{ background: i <= st.energy ? p.color : "#ffffff14" }} />
+              ))}
+              <span className="ml-2 text-xs text-muted">energia</span>
+            </div>
+          </section>
+
+          <div className="rise grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <section className="card p-5">
+              <h2 className="eyebrow !text-emerald-300">Faça</h2>
+              <ul className="mt-2 space-y-2 text-[15px]">{st.do.map((x) => <li key={x} className="flex gap-2.5"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-400/20 text-emerald-300" aria-hidden><Icon name="check" size={12} /></span><span>{x}</span></li>)}</ul>
+            </section>
+            <section className="card p-5">
+              <h2 className="eyebrow !text-rose-300">Evite</h2>
+              <ul className="mt-2 space-y-2 text-[15px]">{st.avoid.map((x) => <li key={x} className="flex gap-2.5"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-rose-400/20 text-rose-300" aria-hidden><Icon name="x" size={12} /></span><span>{x}</span></li>)}</ul>
+            </section>
+          </div>
+
+          <section className="rise card p-5">
+            <h2 className="eyebrow flex items-center gap-1.5" style={{ color: p.color }}><Icon name="spark" size={14} />Dica do dia</h2>
+            <p className="mt-2 text-lg leading-snug">{tip}</p>
+          </section>
+
+          <section className="rise card p-5">
+            <h2 className="eyebrow flex items-center gap-1.5"><Icon name="chat" size={14} />Para puxar papo</h2>
+            <p className="font-display mt-2 border-l-2 pl-4 text-xl leading-snug" style={{ borderColor: p.color }}>{talk}</p>
           </section>
 
           <section className="rise card p-5">
@@ -127,42 +164,6 @@ export default async function Hoje({ searchParams }: { searchParams: Promise<{ d
             <p className="mt-4 rounded-2xl bg-white/5 p-3 text-[15px]"><span className="font-semibold">Para hoje:</span> {read.sign.tip}</p>
             <p className="mt-3 text-[11px] text-muted">Leitura simbólica, para inspirar a conversa. O ciclo é biologia; o céu é só um tempero.</p>
           </section>
-        </div>
-
-        <div className="space-y-5">
-          <section className="rise card p-5">
-            <h2 className="eyebrow flex items-center gap-1.5" style={{ color: p.color }}><Icon name="spark" size={14} />Dica do dia</h2>
-            <p className="mt-2 text-lg leading-snug">{tip}</p>
-          </section>
-
-          <section className="rise card p-5">
-            <h2 className="eyebrow flex items-center gap-1.5"><Icon name="chat" size={14} />Para puxar papo</h2>
-            <p className="font-display mt-2 border-l-2 pl-4 text-xl leading-snug" style={{ borderColor: p.color }}>{talk}</p>
-          </section>
-
-          <section className="rise card p-5">
-            <h2 className="eyebrow">Como ela pode estar</h2>
-            <p className="mt-2">{p.mood}</p>
-            <p className="mt-2 text-sm text-muted">{p.body}</p>
-            <div className="mt-3 flex items-center gap-1" aria-label={`Energia ${p.energy} de 5`}>
-              {[1, 2, 3, 4, 5].map((i) => (
-                <span key={i} className="h-2 flex-1 rounded-full" style={{ background: i <= p.energy ? p.color : "#ffffff14" }} />
-              ))}
-              <span className="ml-2 text-xs text-muted">energia</span>
-            </div>
-          </section>
-
-          <div className="rise grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <section className="card p-5">
-              <h2 className="eyebrow !text-emerald-300">Faça</h2>
-              <ul className="mt-2 space-y-2 text-[15px]">{p.do.map((x) => <li key={x} className="flex gap-2.5"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-400/20 text-emerald-300" aria-hidden><Icon name="check" size={12} /></span><span>{x}</span></li>)}</ul>
-            </section>
-            <section className="card p-5">
-              <h2 className="eyebrow !text-rose-300">Evite</h2>
-              <ul className="mt-2 space-y-2 text-[15px]">{p.avoid.map((x) => <li key={x} className="flex gap-2.5"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-rose-400/20 text-rose-300" aria-hidden><Icon name="x" size={12} /></span><span>{x}</span></li>)}</ul>
-            </section>
-          </div>
-
           <section className="rise card p-5">
             <h2 className="eyebrow">Os próximos dias</h2>
             <ol className="mt-3 flex gap-1.5">
