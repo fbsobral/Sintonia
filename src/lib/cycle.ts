@@ -85,15 +85,19 @@ export function statusOn(profile: Profile, today: string): Status | null {
   const past = profile.starts.filter((s) => s <= today);
   if (!past.length) return null;
   const last = past[past.length - 1];
+  const nextStart = profile.starts.find((s) => s > today);
   const diff = toDay(today) - toDay(last);
-  const L = profile.length;
-  const n = Math.floor(diff / L);
-  const cycleDay = (diff % L) + 1;
-  const ranges = phaseRanges(L, profile.periodLength);
+  // Dentro de um ciclo já encerrado usamos a duração REAL dele; no ciclo corrente, a média.
+  const closed = nextStart ? toDay(nextStart) - toDay(last) : null;
+  const L = closed ?? profile.length;
+  const Lr = Math.max(L, profile.periodLength + 8); // proteção para registros muito curtos
+  const n = closed ? 0 : Math.floor(diff / L);
+  const cycleDay = closed ? diff + 1 : (diff % L) + 1;
+  const ranges = phaseRanges(Lr, profile.periodLength);
   const phase = phaseOf(cycleDay, ranges);
   const [a, b] = ranges[phase];
   const anchorDay = toDay(last) + n * L;
-  const nextDay = anchorDay + L;
+  const nextDay = closed ? toDay(nextStart!) : anchorDay + L;
   return {
     profile,
     ranges,
@@ -101,11 +105,11 @@ export function statusOn(profile: Profile, today: string): Status | null {
     phase,
     phaseDay: cycleDay - a + 1,
     phaseLength: b - a + 1,
-    projected: diff >= L,
+    projected: !closed && diff >= L,
     nextPeriod: fromDay(nextDay),
     daysToPeriod: nextDay - toDay(today),
     ovulationDate: fromDay(anchorDay + ranges.ovulationDay - 1),
-    pms: phase === "lutea" && cycleDay > L - 4,
+    pms: phase === "lutea" && cycleDay > Lr - 4,
     anchor: fromDay(anchorDay),
   };
 }
@@ -115,11 +119,10 @@ export type DayCell = { date: string; cycleDay: number; phase: PhaseKey };
 /** Linha do tempo de `count` dias a partir de `from` (projeta ciclos futuros). */
 export function timeline(profile: Profile, from: string, count: number): DayCell[] {
   const out: DayCell[] = [];
-  const ranges = phaseRanges(profile.length, profile.periodLength);
   for (let i = 0; i < count; i++) {
     const date = fromDay(toDay(from) + i);
     const s = statusOn(profile, date);
-    if (s) out.push({ date, cycleDay: s.cycleDay, phase: phaseOf(s.cycleDay, ranges) });
+    if (s) out.push({ date, cycleDay: s.cycleDay, phase: s.phase });
   }
   return out;
 }

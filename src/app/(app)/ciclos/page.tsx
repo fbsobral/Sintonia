@@ -1,5 +1,6 @@
 import { requirePartner } from "@/lib/session";
-import { fromDay, phaseOf, phaseRanges, statusOn, toDay } from "@/lib/cycle";
+import Link from "next/link";
+import { fromDay, statusOn, toDay } from "@/lib/cycle";
 import { PHASES } from "@/lib/tips";
 import { fmt } from "@/lib/format";
 import { addCycle, deleteCycle } from "@/app/actions";
@@ -16,11 +17,10 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
   const year = first.getUTCFullYear(), month = first.getUTCMonth();
   const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
   const pad = first.getUTCDay();
-  const ranges = phaseRanges(profile.length, profile.periodLength);
   const cells = Array.from({ length: daysInMonth }, (_, i) => {
     const date = fromDay(toDay(`${year}-${String(month + 1).padStart(2, "0")}-01`) + i);
     const st = statusOn(profile, date);
-    return { date, day: i + 1, phase: st ? phaseOf(st.cycleDay, ranges) : null, ov: st?.cycleDay === ranges.ovulationDay };
+    return { date, day: i + 1, phase: st ? st.phase : null, ov: st ? st.cycleDay === st.ranges.ovulationDay : false };
   });
 
   const needed = Math.max(0, 3 - profile.starts.length);
@@ -68,11 +68,11 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
             const col = c.phase ? PHASES[c.phase].color : null;
             const isToday = c.date === today;
             return (
-              <div key={c.date} className="relative grid aspect-square place-items-center rounded-xl text-sm font-semibold"
+              <Link key={c.date} href={c.date === today ? "/hoje" : `/hoje?d=${c.date}`} aria-label={`Ver o dia ${c.day}`} className="relative grid aspect-square place-items-center rounded-xl text-sm font-semibold transition hover:scale-105"
                 style={{ background: col ? `${col}${c.phase === "menstrual" ? "55" : "26"}` : "transparent", color: col ?? "var(--muted)", outline: isToday ? "2px solid #fff" : undefined }}>
                 {c.day}
                 {c.ov && <span className="absolute bottom-1 h-1 w-1 rounded-full bg-white" aria-label="ovulação" />}
-              </div>
+              </Link>
             );
           })}
         </div>

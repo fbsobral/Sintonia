@@ -1,6 +1,9 @@
 node_modules
 .next
 .git
+.claude
+.github
 .env*
 !.env.example
 README.md
+*.log

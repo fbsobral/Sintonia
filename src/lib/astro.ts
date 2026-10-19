@@ -76,3 +76,27 @@ export function daysToBirthday(birthDate: string, today: string) {
   if (target < now) target = mk(y + 1);
   return Math.round((target - now) / 86_400_000);
 }
+
+type SelfText = { essence: string; moon: string; venus: string; mars: string };
+
+/** Leitura do mapa DELE: masculino e em segunda pessoa. */
+export const SIGN_SELF: Record<Sign, SelfText> = {
+  "Áries": { essence: "Direto, corajoso e impulsivo.", moon: "Você sente rápido e precisa de ação para processar emoções.", venus: "Você ama com iniciativa e gosta de conquistar.", mars: "Você esquenta rápido e esfria rápido. Respire antes de responder." },
+  "Touro": { essence: "Estável, sensorial e leal.", moon: "Você precisa de segurança, conforto e rotina.", venus: "Você ama com presença, toque e gestos concretos.", mars: "Você demora a irritar, mas não esquece. Cuidado com a teimosia." },
+  "Gêmeos": { essence: "Curioso, comunicativo e versátil.", moon: "Você processa sentimentos conversando.", venus: "Você ama com papo, humor e novidade.", mars: "Você discute com palavras. Escute até o fim antes de rebater." },
+  "Câncer": { essence: "Cuidadoso, intuitivo e protetor.", moon: "Suas emoções são profundas. Você precisa de acolhimento e de um lar emocional.", venus: "Você ama cuidando e lembrando detalhes.", mars: "Você fica na defensiva quando magoado. Fale o que sente em vez de se fechar." },
+  "Leão": { essence: "Generoso, vaidoso e caloroso.", moon: "Você precisa se sentir visto e valorizado.", venus: "Você ama com grandeza e gosta de ser admirado.", mars: "Seu orgulho pesa nas brigas. Reconhecer o erro primeiro desarma." },
+  "Virgem": { essence: "Detalhista, prestativo e analítico.", moon: "Sua ansiedade se acalma com ordem e utilidade.", venus: "Você ama servindo e cuidando do dia a dia.", mars: "Você critica quando estressado. Elogie antes de apontar." },
+  "Libra": { essence: "Elegante, diplomático e sociável.", moon: "Você precisa de harmonia e de conversa tranquila.", venus: "Você ama com romance, estética e parceria.", mars: "Você evita conflito até explodir. Fale cedo, com calma." },
+  "Escorpião": { essence: "Intenso, magnético e reservado.", moon: "Você sente tudo fundo e confia devagar.", venus: "Você ama com entrega total e lealdade.", mars: "Você guarda mágoa. Coloque para fora antes de virar silêncio." },
+  "Sagitário": { essence: "Livre, otimista e aventureiro.", moon: "Você precisa de espaço e de sentido nas coisas.", venus: "Você ama com aventura e liberdade.", mars: "Sua franqueza pode ferir. Mantenha o humor e meça as palavras." },
+  "Capricórnio": { essence: "Ambicioso, responsável e firme.", moon: "Você guarda emoções e demonstra com ações.", venus: "Você ama com compromisso e constância.", mars: "Você se fecha quando cobrado. Peça tempo em vez de se afastar." },
+  "Aquário": { essence: "Original, independente e racional.", moon: "Você precisa de espaço mental e de liberdade.", venus: "Você ama com amizade, ideias e respeito ao espaço.", mars: "Você esfria e se afasta no conflito. Fique e converse." },
+  "Peixes": { essence: "Sensível, sonhador e empático.", moon: "Você absorve o ambiente. Precisa de carinho e de tempo sozinho.", venus: "Você ama de forma romântica, intuitiva e sem limites.", mars: "Você evita o embate e some. Diga o que precisa, mesmo desconfortável." },
+};
+
+export type Who = "him" | "her";
+/** Texto do signo conforme de quem é o mapa (ele em masculino/2ª pessoa, ela como já escrito). */
+export function reading(sign: Sign, planet: "essence" | "moon" | "venus" | "mars", who: Who) {
+  return who === "him" ? SIGN_SELF[sign][planet] : SIGN_INFO[sign][planet === "essence" ? "essence" : planet];
+}

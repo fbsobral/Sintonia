@@ -82,13 +82,13 @@ export function OnboardingFlow() {
     if (!ready[step] || pending) return;
     if (step === "myBirth") {
       if (!meDate) return next();
-      return start(async () => { try { setMeR(await revealSign(meDate, meTime)); next(); } catch { setError("Confira a data informada."); } });
+      return start(async () => { try { setMeR(await revealSign(meDate, meTime, "him")); next(); } catch { setError("Confira a data informada."); } });
     }
     if (step === "herBirth") {
       return start(async () => {
         try {
           if (meDate) { const r = await revealCouple(meDate, meTime, date, time); setDuo(r); setHerR(r.her); setMeR(r.him); }
-          else setHerR(await revealSign(date, time));
+          else setHerR(await revealSign(date, time, "her"));
           next();
         } catch { setError("Confira a data informada."); }
       });

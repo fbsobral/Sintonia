@@ -162,10 +162,13 @@ export const PMS_TIPS = [
   "Prepare o terreno: chocolate, chá e um dia sem compromissos pesados fazem diferença.",
 ];
 
-export function dayTip(phase: PhaseKey, phaseDay: number, pms: boolean) {
+/** A dica acompanha a POSIÇÃO na fase (início → fim), então se a fase encurta ou alonga, a narrativa se ajusta. */
+export function dayTip(phase: PhaseKey, phaseDay: number, pms: boolean, phaseLength: number) {
   if (pms) return PMS_TIPS[phaseDay % PMS_TIPS.length];
   const t = PHASES[phase].days;
-  return t[(phaseDay - 1) % t.length];
+  const raw = phaseLength > 1 ? Math.round(((phaseDay - 1) * (t.length - 1)) / (phaseLength - 1)) : 0;
+  const i = Number.isFinite(raw) ? raw : 0;
+  return t[Math.min(Math.max(i, 0), t.length - 1)];
 }
 
 export function pick<T>(arr: T[], seed: number) {

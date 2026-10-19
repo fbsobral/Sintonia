@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requirePartner } from "@/lib/session";
-import { chartFor, daysToBirthday, SIGN_INFO, skyToday, type Chart } from "@/lib/astro";
+import { chartFor, daysToBirthday, reading, SIGN_INFO, skyToday, type Chart, type Who } from "@/lib/astro";
 import { compatibility } from "@/lib/synastry";
 import { dateStr } from "@/lib/cycle";
 import { fmt, inDays } from "@/lib/format";
@@ -43,9 +43,9 @@ export default async function Astro({ searchParams }: { searchParams: Promise<{ 
       </nav>
 
       {view === "nos" && (him ? <Together him={him} her={her} name={partner.name} /> : <CompleteProfile />)}
-      {view === "ela" && <ChartView name={partner.name} chart={her} bd={herBd} bt={partner.birthTime} today={today} />}
+      {view === "ela" && <ChartView who="her" name={partner.name} chart={her} bd={herBd} bt={partner.birthTime} today={today} />}
       {view === "voce" && (him && user.birthDate
-        ? <ChartView name={user.name || "Você"} chart={him} bd={dateStr(user.birthDate)} bt={user.birthTime} today={today} />
+        ? <ChartView who="him" name={user.name || "Você"} chart={him} bd={dateStr(user.birthDate)} bt={user.birthTime} today={today} />
         : <CompleteProfile />)}
 
       <p className="px-2 text-center text-xs text-muted">
@@ -99,14 +99,16 @@ function Together({ him, her, name }: { him: Chart; her: Chart; name: string }) 
   );
 }
 
-function ChartView({ name, chart: c, bd, bt, today }: { name: string; chart: Chart; bd: string; bt?: string | null; today: string }) {
+function ChartView({ who, name, chart: c, bd, bt, today }: { who: Who; name: string; chart: Chart; bd: string; bt?: string | null; today: string }) {
   const rows = [
-    { k: "Sol", sub: "Essência", p: c.sun, text: SIGN_INFO[c.sun.sign].essence },
-    { k: "Lua", sub: "Emoções e necessidades", p: c.moon, text: SIGN_INFO[c.moon.sign].moon },
-    { k: "Vênus", sub: "Como ama", p: c.venus, text: SIGN_INFO[c.venus.sign].venus },
-    { k: "Marte", sub: "Desejo e conflito", p: c.mars, text: SIGN_INFO[c.mars.sign].mars },
+    { k: "Sol", sub: "Essência", p: c.sun, text: reading(c.sun.sign, "essence", who) },
+    { k: "Lua", sub: "Emoções e necessidades", p: c.moon, text: reading(c.moon.sign, "moon", who) },
+    { k: "Vênus", sub: "Como ama", p: c.venus, text: reading(c.venus.sign, "venus", who) },
+    { k: "Marte", sub: "Desejo e conflito", p: c.mars, text: reading(c.mars.sign, "mars", who) },
   ];
-  const topEl = Object.entries(c.elements).sort((a, b) => b[1] - a[1])[0][0];
+  const sunEl = SIGN_INFO[c.sun.sign].element;
+  const [topEl, topN] = Object.entries(c.elements).sort((x, y) => y[1] - x[1])[0];
+  const mix = topEl !== sunEl && topN > c.elements[sunEl];
   const left = daysToBirthday(bd, today);
   return (
     <div className="space-y-5">
@@ -131,8 +133,9 @@ function ChartView({ name, chart: c, bd, bt, today }: { name: string; chart: Cha
         ))}
       </div>
       <section className="rise card p-5">
-        <h3 className="eyebrow">Elemento dominante</h3>
-        <p className="font-display mt-1 text-2xl">{topEl}</p>
+        <h3 className="eyebrow">Elementos do mapa</h3>
+        <p className="font-display mt-1 text-2xl">{sunEl} <span className="text-base text-muted">no Sol</span></p>
+        {mix && <p className="mt-1 text-sm text-muted">{topEl} predomina no conjunto: {topN} de 4 planetas (Lua, Vênus e Marte somam).</p>}
         <div className="mt-4 flex gap-2">
           {Object.entries(c.elements).map(([k, n]) => (
             <div key={k} className="flex-1 text-center">
