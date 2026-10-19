@@ -22,6 +22,9 @@ model User {
   sendHour    Int      @default(8)
   timezone    String   @default("America/Sao_Paulo")
   lastEmailOn String? // YYYY-MM-DD do último envio diário
+  name        String?
+  birthDate   DateTime? @db.Date
+  birthTime   String? // HH:mm (opcional)
   createdAt   DateTime @default(now())
   partner     Partner?
 }

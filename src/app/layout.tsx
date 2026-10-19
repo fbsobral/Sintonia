@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   applicationName: "Sintonia",
   appleWebApp: { capable: true, title: "Sintonia", statusBarStyle: "black-translucent" },
 };
-export const viewport: Viewport = { themeColor: "#0f0d1f", width: "device-width", initialScale: 1, viewportFit: "cover" };
+export const viewport: Viewport = { themeColor: "#0b0919", width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

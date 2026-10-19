@@ -19,9 +19,25 @@ const partnerSchema = z.object({
   periodLength: z.coerce.number().int().min(2).max(10),
 });
 
+const meSchema = z.object({
+  myName: z.string().trim().max(60).optional(),
+  myBirthDate: date.optional().or(z.literal("")),
+  myBirthTime: z.string().regex(/^\d{2}:\d{2}$/).optional().or(z.literal("")),
+});
+
 export async function saveOnboarding(fd: FormData) {
   const user = await getUser();
-  const p = partnerSchema.parse(Object.fromEntries(fd));
+  const raw = Object.fromEntries(fd);
+  const p = partnerSchema.parse(raw);
+  const me = meSchema.parse(raw);
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      name: me.myName || null,
+      birthDate: me.myBirthDate ? asDate(me.myBirthDate) : null,
+      birthTime: me.myBirthDate && me.myBirthTime ? me.myBirthTime : null,
+    },
+  });
   const lastPeriod = date.parse(fd.get("lastPeriod"));
   const data = {
     name: p.name,
@@ -54,6 +70,20 @@ export async function updatePartner(fd: FormData) {
       birthTime: p.birthTime || null,
       cycleMode: p.cycleMode,
       periodLength: p.periodLength,
+    },
+  });
+  revalidatePath("/", "layout");
+}
+
+export async function updateMe(fd: FormData) {
+  const user = await getUser();
+  const me = meSchema.parse(Object.fromEntries(fd));
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      name: me.myName || null,
+      birthDate: me.myBirthDate ? asDate(me.myBirthDate) : null,
+      birthTime: me.myBirthDate && me.myBirthTime ? me.myBirthTime : null,
     },
   });
   revalidatePath("/", "layout");

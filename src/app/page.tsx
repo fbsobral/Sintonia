@@ -2,6 +2,9 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Ring } from "@/components/Ring";
+import { Logo } from "@/components/Logo";
+import { Orbit, Stars } from "@/components/Orbit";
+import { Icon } from "@/components/Icon";
 import { phaseRanges } from "@/lib/cycle";
 import { PHASES } from "@/lib/tips";
 
@@ -28,17 +31,18 @@ export default async function Home() {
 
   return (
     <div className="overflow-x-clip">
+      <Stars />
       <header className="mx-auto flex max-w-5xl items-center justify-between px-5 pb-2 pt-[max(env(safe-area-inset-top),1.25rem)]">
-        <span className="font-display text-xl tracking-wide">Sintonia</span>
+        <Logo size={30} />
         <Link href="/sign-in" className="flex min-h-[44px] items-center rounded-full px-4 text-sm text-muted hover:text-ink">Entrar</Link>
       </header>
 
       {/* HERO */}
       <section className="mx-auto grid max-w-5xl items-center gap-10 px-5 pb-16 pt-8 md:grid-cols-2 md:pt-16">
         <div className="rise">
-          <p className="inline-block rounded-full border border-line bg-white/5 px-3 py-1 text-xs uppercase tracking-[.18em] text-muted">Para quem quer acertar mais</p>
+          <p className="eyebrow inline-block rounded-full border border-line bg-white/5 px-3.5 py-1.5">Para quem quer acertar mais</p>
           <h1 className="font-display mt-5 text-[2.7rem] leading-[1.04] md:text-6xl">
-            Entenda o momento dela. Esteja em <em className="text-accent">sintonia</em>.
+            Entenda o momento dela. Esteja em <em className="text-grad">sintonia</em>.
           </h1>
           <p className="mt-5 max-w-md text-lg text-muted">
             O Sintonia mostra em que fase do ciclo ela está e o que fazer hoje: como conversar, o que evitar e quando dar mais atenção. Menos conflito, mais presença.
@@ -129,8 +133,15 @@ export default async function Home() {
           <p className="mt-1 text-muted">Ciclos de 28, 31 dias ou irregulares. Quanto mais você registra, mais a previsão acompanha a realidade.</p>
         </article>
         <article className="card p-6">
-          <h3 className="font-display text-2xl">Signo e mapa astral</h3>
-          <p className="mt-1 text-muted">Sol, Lua, Vênus e Marte dela, e o que isso diz sobre como ela ama, se emociona e discute.</p>
+          <h3 className="font-display text-2xl">Seu mapa e o dela</h3>
+          <p className="mt-1 text-muted">Sol, Lua, Vênus e Marte dos dois, e o que isso diz sobre como cada um ama, se emociona e discute.</p>
+        </article>
+        <article className="card flex items-center gap-5 p-6 md:col-span-2">
+          <div className="hidden sm:block"><Orbit a="♏" b="♋" size={150} /></div>
+          <div>
+            <h3 className="font-display text-2xl">Compatibilidade de vocês dois</h3>
+            <p className="mt-1 text-muted">Veja onde vocês fluem e onde pedem cuidado: essência, emoções, atração e acolhimento, com dicas práticas para cada ponto.</p>
+          </div>
         </article>
       </section>
 
@@ -151,15 +162,15 @@ export default async function Home() {
 
       {/* CTA FINAL */}
       <section className="relative isolate flex min-h-[100svh] w-full flex-col items-center justify-center px-5 py-20 text-center" style={{ background: "radial-gradient(90% 70% at 50% 100%, #4a3bb0 0%, #2a2160 45%, var(--bg) 100%)" }}>
-        <p className="text-xs uppercase tracking-[.25em] text-muted">Sintonia</p>
-        <h2 className="font-display mt-5 max-w-3xl text-4xl leading-[1.08] md:text-6xl">Comece hoje. Amanhã de manhã você já sabe como conduzir o dia.</h2>
-        <Link href="/sign-up" className="btn mt-10 px-8 text-lg">Criar minha conta grátis</Link>
+        <Orbit a="♏" b="♋" />
+        <h2 className="font-display mt-8 max-w-3xl text-4xl leading-[1.08] md:text-6xl">Comece hoje. Amanhã de manhã você já sabe como conduzir o dia.</h2>
+        <Link href="/sign-up" className="btn mt-10 px-8 text-lg">Criar minha conta grátis<Icon name="arrow" size={18} /></Link>
         <p className="mt-4 text-sm text-muted">Grátis · Pronto em 1 minuto</p>
       </section>
 
       <footer className="mx-auto max-w-5xl px-5 pb-[max(env(safe-area-inset-bottom),2rem)] text-center text-xs text-muted">
         <p>As previsões são estimativas e não substituem orientação médica nem servem como método contraceptivo. Astrologia é inspiração, não ciência.</p>
-        <p className="mt-2">Sintonia</p>
+        <p className="mt-3 flex justify-center opacity-70"><Logo size={22} /></p>
       </footer>
     </div>
   );

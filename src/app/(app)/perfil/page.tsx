@@ -1,6 +1,6 @@
 import { UserButton } from "@clerk/nextjs";
 import { requirePartner } from "@/lib/session";
-import { sendTestEmail, updatePartner, updateSettings } from "@/app/actions";
+import { sendTestEmail, updateMe, updatePartner, updateSettings } from "@/app/actions";
 import { PartnerFields } from "@/components/PartnerFields";
 
 export const metadata = { title: "Perfil" };
@@ -34,6 +34,23 @@ export default async function Perfil() {
           <button className="btn w-full">Salvar</button>
         </form>
         <form action={sendTestEmail} className="mt-3"><button className="btn btn-ghost w-full">Enviar e-mail de teste agora</button></form>
+      </section>
+
+      <section id="voce" className="rise card scroll-mt-6 p-5">
+        <h2 className="font-display text-xl">Seus dados</h2>
+        <p className="text-sm text-muted">Para calcular o seu mapa e a compatibilidade entre vocês.</p>
+        <form action={updateMe} className="mt-4 space-y-4">
+          <label className="block text-sm text-muted">Seu nome
+            <input name="myName" defaultValue={user.name ?? ""} maxLength={60} className="field mt-1" />
+          </label>
+          <label className="block text-sm text-muted">Data de nascimento
+            <input type="date" name="myBirthDate" defaultValue={user.birthDate?.toISOString().slice(0, 10) ?? ""} className="field mt-1" />
+          </label>
+          <label className="block text-sm text-muted">Hora de nascimento <span className="opacity-70">(opcional)</span>
+            <input type="time" name="myBirthTime" defaultValue={user.birthTime ?? ""} className="field mt-1" />
+          </label>
+          <button className="btn w-full">Salvar</button>
+        </form>
       </section>
 
       <section className="rise card p-5">
