@@ -31,7 +31,7 @@ async function run(req: Request) {
     const status = statusOn(profile, today);
     if (!status) { skipped++; continue; }
     try {
-      const { subject, html } = buildDailyEmail(u.partner.name, status, today);
+      const { subject, html } = buildDailyEmail(u.partner.name, status, today, { birthDate: dateStr(u.partner.birthDate), birthTime: u.partner.birthTime });
       await sendEmail(u.email, subject, html);
       await db.user.update({ where: { id: u.id }, data: { lastEmailOn: today } });
       sent++;

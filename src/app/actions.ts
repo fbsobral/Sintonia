@@ -130,6 +130,6 @@ export async function sendTestEmail() {
   const { user, partner, profile, today } = await requirePartner();
   const status = statusOn(profile, today);
   if (!status || !user.email) return;
-  const { subject, html } = buildDailyEmail(partner.name, status, today);
+  const { subject, html } = buildDailyEmail(partner.name, status, today, { birthDate: partner.birthDate.toISOString().slice(0, 10), birthTime: partner.birthTime });
   await sendEmail(user.email, subject, html);
 }

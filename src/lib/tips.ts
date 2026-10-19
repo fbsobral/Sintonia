@@ -325,7 +325,7 @@ export const STAGES: Record<PhaseKey, Stage[]> = {
       energy: 3, sensitivity: 4, desire: 2,
       do: ["Reduza a carga dela: menos tarefas e menos decisões", "Seja direto e gentil, sem ironia nem sarcasmo", "Mantenha a rotina e cumpra o que combinou"],
       avoid: ["Críticas e cobranças", "Discussões sobre a relação", "Programas que exigem muita energia"],
-      talk: ["“Hoje eu cuido do que for preciso. Você só avisa o que ajudar.”", "“Posso deixar esse assunto pra depois que você estiver melhor?”"],
+      talk: ["“Hoje eu cuido do que for preciso. Se quiser mais alguma coisa, é só me dizer.”", "“Posso deixar esse assunto pra depois que você estiver melhor?”"],
       tip: "Adie discussões importantes para depois da menstruação. Não é fugir do assunto: é escolher o momento em que a conversa rende.",
     },
     {
