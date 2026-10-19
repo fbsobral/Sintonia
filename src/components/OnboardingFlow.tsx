@@ -14,9 +14,9 @@ const ORDER = ["welcome", "myName", "myBirth", "myReveal", "herName", "herBirth"
 type Step = (typeof ORDER)[number];
 
 const MODES = [
-  { id: "D28", t: "28 dias", d: "O ciclo clássico" },
-  { id: "D31", t: "31 dias", d: "Um pouco mais longo" },
-  { id: "IRREGULAR", t: "Irregular", d: "Varia bastante. Vamos aprender juntos" },
+  { id: "D28", t: "28 dias", d: "Duração mais comum" },
+  { id: "D31", t: "31 dias", d: "Ciclo um pouco mais longo" },
+  { id: "IRREGULAR", t: "Irregular", d: "A duração varia bastante entre ciclos" },
 ];
 
 function useCountUp(to: number, run: boolean) {
@@ -126,20 +126,20 @@ export function OnboardingFlow() {
           <div className="text-center">
             <div className="float pop mx-auto w-fit"><LogoMark size={96} /></div>
             <h1 className="font-display rise d1 mt-8 text-[2.6rem] leading-[1.05]">Vamos entrar em <span className="text-grad italic">sintonia</span></h1>
-            <p className="rise d2 mx-auto mt-4 max-w-xs text-lg text-muted">Algumas perguntas rápidas e você descobre o céu de vocês dois.</p>
+            <p className="rise d2 mx-auto mt-4 max-w-xs text-lg text-muted">Algumas perguntas rápidas para personalizar o app: seus dados, os dela e o ritmo do ciclo. Leva cerca de 1 minuto.</p>
           </div>
         )}
 
         {step === "myName" && (
-          <Ask eyebrow="Primeiro, você" title="Como você se chama?">
+          <Ask eyebrow="Primeiro, você" title="Como você se chama?" sub="Usamos o nome para personalizar as mensagens.">
             <input autoFocus value={meName} onChange={(e) => setMeName(e.target.value)} maxLength={60} placeholder="Seu nome" autoComplete="given-name" className="big-input" />
           </Ask>
         )}
 
         {step === "myBirth" && (
-          <Ask eyebrow={`Prazer, ${meName.trim()}`} title="Quando você nasceu?" sub="Vamos descobrir seu signo e seu mapa astral.">
+          <Ask eyebrow={`Prazer, ${meName.trim()}`} title="Quando você nasceu?" sub="Usamos a data para calcular o seu signo e o seu mapa astral.">
             <input type="date" value={meDate} onChange={(e) => setMeDate(e.target.value)} max={today} className="field text-lg" aria-label="Data de nascimento" />
-            <label className="mt-4 block text-sm text-muted">Hora de nascimento <span className="opacity-60">(opcional, deixa o mapa mais preciso)</span>
+            <label className="mt-4 block text-sm text-muted">Hora de nascimento <span className="opacity-60">(opcional: melhora a precisão da Lua e de Vênus)</span>
               <input type="time" value={meTime} onChange={(e) => setMeTime(e.target.value)} className="field mt-1.5" />
             </label>
             <button type="button" onClick={() => { setMeDate(""); setMeTime(""); next(); }} className="mt-5 text-sm text-muted underline underline-offset-4">Prefiro não informar agora</button>
@@ -149,13 +149,13 @@ export function OnboardingFlow() {
         {step === "myReveal" && meR && <RevealCard who={`${meName.trim()}, você é`} r={meR} />}
 
         {step === "herName" && (
-          <Ask eyebrow="Agora, ela" title="Como ela se chama?" sub="Como você a chama no dia a dia.">
+          <Ask eyebrow="Agora, ela" title="Como ela se chama?" sub="O nome pelo qual você a chama no dia a dia.">
             <input autoFocus value={name} onChange={(e) => setName(e.target.value)} maxLength={60} placeholder="Nome dela" className="big-input" />
           </Ask>
         )}
 
         {step === "herBirth" && (
-          <Ask eyebrow={name.trim()} title={`Quando ${name.trim()} nasceu?`} sub="Com isso entendemos como ela sente, ama e reage.">
+          <Ask eyebrow={name.trim()} title={`Quando ${name.trim()} nasceu?`} sub="Usamos a data para calcular o mapa dela e a compatibilidade entre vocês.">
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} max={today} className="field text-lg" aria-label="Data de nascimento dela" />
             <label className="mt-4 block text-sm text-muted">Hora de nascimento <span className="opacity-60">(opcional)</span>
               <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="field mt-1.5" />
@@ -170,7 +170,7 @@ export function OnboardingFlow() {
             <p className="eyebrow rise">O céu de vocês dois</p>
             <div className="rise d1 mt-5"><Orbit a={duo.him.glyph} b={duo.her.glyph} /></div>
             <p className="font-display pop d3 mt-4 text-6xl leading-none"><span className="text-grad">{score}</span><span className="text-3xl text-muted">%</span></p>
-            <p className="rise d3 mt-1 text-xs uppercase tracking-widest text-muted">de sintonia</p>
+            <p className="rise d3 mt-1 text-xs uppercase tracking-widest text-muted">de compatibilidade astral</p>
             <h2 className="font-display rise d3 mt-3 text-2xl leading-snug">{duo.couple.headline}</h2>
             <p className="rise d4 mt-2 text-sm text-muted">{duo.couple.elementNote}</p>
             <ul className="mt-6 space-y-2 text-left">
@@ -181,12 +181,12 @@ export function OnboardingFlow() {
                 </li>
               ))}
             </ul>
-            <p className="mt-4 text-xs text-muted">Um retrato do potencial de vocês, não uma sentença.</p>
+            <p className="mt-4 text-xs text-muted">Leitura simbólica: serve como ponto de partida para conversar, não como previsão.</p>
           </div>
         )}
 
         {step === "cycle" && (
-          <Ask eyebrow="O ritmo dela" title="Como é o ciclo dela?" sub="Sem pressão: depois de 3 registros o app passa a usar a média real.">
+          <Ask eyebrow="O ritmo dela" title="Como é o ciclo dela?" sub="Escolha o que mais se aproxima. Depois de 3 menstruações registradas, o app passa a usar a média real dos ciclos dela.">
             <div className="space-y-2.5" role="radiogroup">
               {MODES.map((m) => (
                 <button type="button" key={m.id} role="radio" aria-checked={mode === m.id} onClick={() => setMode(m.id)}
@@ -197,7 +197,7 @@ export function OnboardingFlow() {
               ))}
             </div>
             <div className="mt-5 flex items-center justify-between rounded-2xl border border-line bg-white/5 p-3">
-              <span className="pl-2 text-sm text-muted">Menstruação dura<br /><b className="text-base text-ink">{period} dias</b></span>
+              <span className="pl-2 text-sm text-muted">Duração da menstruação<br /><b className="text-base text-ink">{period} dias</b></span>
               <span className="flex gap-2">
                 <button type="button" aria-label="Menos um dia" onClick={() => setPeriod((p) => Math.max(2, p - 1))} className="grid h-11 w-11 place-items-center rounded-full bg-white/10 text-xl">−</button>
                 <button type="button" aria-label="Mais um dia" onClick={() => setPeriod((p) => Math.min(10, p + 1))} className="grid h-11 w-11 place-items-center rounded-full bg-white/10 text-xl">+</button>
@@ -207,7 +207,7 @@ export function OnboardingFlow() {
         )}
 
         {step === "last" && (
-          <Ask eyebrow="Último passo" title="Quando começou a última menstruação?" sub="O primeiro dia do sangramento. Pode ser aproximado.">
+          <Ask eyebrow="Último passo" title="Quando começou a última menstruação?" sub="Conte o primeiro dia de sangramento. Pode ser aproximado.">
             <div className="mb-3 flex flex-wrap gap-2">
               {[["Hoje", 0], ["Ontem", 1], ["Há 3 dias", 3], ["Há 1 semana", 7], ["Há 2 semanas", 14]].map(([l, n]) => (
                 <button type="button" key={l as string} onClick={() => setLast(daysAgo(n as number))}
@@ -223,7 +223,7 @@ export function OnboardingFlow() {
 
       <footer className="relative z-10 mx-auto w-full max-w-md px-5 pb-[max(env(safe-area-inset-bottom),1.25rem)] pt-2">
         <button type="submit" disabled={!ready[step] || pending} className="btn w-full text-base">
-          {pending ? "Consultando os astros…" : cta(step)}
+          {pending ? "Calculando…" : cta(step)}
           {!pending && <Icon name={last_ ? "spark" : "arrow"} size={18} />}
         </button>
       </footer>
@@ -235,8 +235,8 @@ export function OnboardingFlow() {
 
 function cta(s: Step) {
   return ({
-    welcome: "Começar", myName: "Continuar", myBirth: "Revelar meu signo", myReveal: "Agora, ela", herName: "Continuar",
-    herBirth: "Revelar o céu dela", herReveal: "Ver nós dois", couple: "Continuar", cycle: "Continuar", last: "Entrar no Sintonia",
+    welcome: "Começar", myName: "Continuar", myBirth: "Calcular meu mapa", myReveal: "Continuar", herName: "Continuar",
+    herBirth: "Calcular o mapa dela", herReveal: "Ver compatibilidade", couple: "Continuar", cycle: "Continuar", last: "Concluir",
   } as Record<Step, string>)[s];
 }
 
@@ -267,7 +267,7 @@ function RevealCard({ who, r }: { who: string; r: Reveal }) {
           <li key={k} className="rounded-full border border-line bg-white/5 px-3.5 py-1.5"><span className="text-muted">{k} </span>{v}</li>
         ))}
       </ul>
-      {r.approx && <p className="mt-4 text-xs text-muted">Sem a hora de nascimento, Lua e Vênus são aproximadas.</p>}
+      {r.approx && <p className="mt-4 text-xs text-muted">Sem a hora de nascimento, a Lua e Vênus são aproximadas.</p>}
     </div>
   );
 }

@@ -11,42 +11,42 @@ export function aspectBetween(a: Sign, b: Sign): Aspect {
 
 const SCORE: Record<Aspect, number> = { trig: 92, sext: 84, conj: 78, opos: 70, dist: 58, quad: 60 };
 export const ASPECT_LABEL: Record<Aspect, string> = {
-  trig: "Fluem juntos", sext: "Se complementam", conj: "Muito parecidos", opos: "Opostos que se atraem", quad: "Tensão que move", dist: "Mundos diferentes",
+  trig: "Fluxo natural", sext: "Se complementam", conj: "Muito semelhantes", opos: "Opostos complementares", quad: "Atrito produtivo", dist: "Estilos distintos",
 };
 
 type Kind = "sol" | "lua" | "desejo" | "cuidado";
 const TEXT: Record<Kind, Record<Aspect, string>> = {
   sol: {
-    conj: "Mesma essência: vocês se reconhecem rápido, e também repetem os mesmos pontos cegos. Combinem de ouvir o outro antes de reagir.",
-    sext: "Estilos diferentes que se ajudam. Um empurra o outro para fora da zona de conforto sem peso.",
-    quad: "Jeitos de agir que se chocam. É aí que nasce a atrito, e também o crescimento, se houver paciência.",
-    trig: "Convivência natural. Vocês concordam no essencial sem esforço, então invistam em novidade para não cair na rotina.",
-    opos: "Um completa o que falta no outro. Funciona quando cada um respeita o ritmo do outro em vez de tentar mudá-lo.",
-    dist: "Vocês pensam por caminhos diferentes. Perguntar “como você vê isso?” evita muito ruído.",
+    conj: "Vocês têm a mesma essência: se reconhecem rápido e tendem a pensar parecido. O risco é compartilhar os mesmos pontos cegos, então vale ouvir uma opinião de fora em decisões importantes.",
+    sext: "Estilos diferentes, mas compatíveis. Cada um traz o que falta ao outro sem grande esforço, desde que haja iniciativa para trocar.",
+    quad: "Formas de agir que se chocam. É onde costuma haver atrito, mas também crescimento, se vocês negociarem o jeito de decidir em vez de disputar quem está certo.",
+    trig: "Convivência fluida: vocês concordam no essencial sem esforço. O cuidado é não cair na rotina, então vale planejar novidade de propósito.",
+    opos: "Vocês se complementam por contraste. Funciona quando cada um respeita o ritmo do outro em vez de tentar convertê-lo.",
+    dist: "Vocês chegam às conclusões por caminhos diferentes. Perguntar “como você vê isso?” antes de opinar evita muito ruído.",
   },
   lua: {
-    conj: "Sentem do mesmo jeito. Ela tende a se sentir muito compreendida por você.",
-    sext: "As necessidades emocionais se encaixam. É fácil acolher e ser acolhido.",
-    quad: "O que acalma um pode agitar o outro. Pergunte o que ela precisa em vez de assumir.",
-    trig: "Emoções em harmonia. O lar de vocês tende a ser um lugar seguro.",
-    opos: "Um precisa de proximidade quando o outro precisa de espaço. Combinem sinais claros para pedir cada um.",
-    dist: "Vocês processam sentimentos de formas bem distintas. Paciência e palavras simples ajudam.",
+    conj: "Vocês sentem de forma parecida, então ela tende a se sentir compreendida por você sem precisar explicar muito.",
+    sext: "As necessidades emocionais de vocês se encaixam: é relativamente fácil acolher e ser acolhido.",
+    quad: "O que acalma um pode agitar o outro. Pergunte o que ela precisa em vez de oferecer o que você precisaria.",
+    trig: "Emoções em harmonia. A casa de vocês tende a ser um lugar de descanso emocional.",
+    opos: "Um precisa de proximidade quando o outro precisa de espaço. Combinar sinais claros para pedir cada coisa evita mal-entendidos.",
+    dist: "Vocês processam sentimentos de formas bem distintas. Frases simples e diretas funcionam melhor que subentendidos.",
   },
   desejo: {
-    conj: "Atração direta e intensa. Cuidado para a paixão não esquentar a discussão também.",
-    sext: "Química leve e divertida. O flerte funciona quando há brincadeira.",
-    quad: "Faísca forte, mas com pavio curto. Toque e carinho desarmam mais que argumento.",
+    conj: "Atração direta e intensa. A mesma intensidade pode transformar discussões em conflitos grandes, então combinem pausas.",
+    sext: "Química leve e divertida. O flerte e a brincadeira funcionam melhor que a seriedade.",
+    quad: "Faísca forte, mas de pavio curto. Contato físico e carinho costumam desarmar mais que argumento.",
     trig: "Desejo e afeto andam juntos. É a combinação de quem se entende no olhar.",
-    opos: "Polaridade magnética: o que é diferente atrai. Mantenham o mistério vivo.",
-    dist: "A atração pede mais tradução: falem do que gostam em vez de esperar que o outro adivinhe.",
+    opos: "Polaridade magnética: o que é diferente atrai. Manter algum mistério e iniciativa alimenta a atração.",
+    dist: "A atração pede tradução: falem do que gostam em vez de esperar que o outro adivinhe.",
   },
   cuidado: {
-    conj: "Você entende bem o que ela sente. Use isso para antecipar, não para presumir.",
-    sext: "Seu jeito de cuidar chega até ela de forma natural. Pequenos gestos valem muito.",
+    conj: "Você entende bem o que ela sente. Use isso para antecipar necessidades, sem presumir.",
+    sext: "Seu jeito de cuidar chega a ela com naturalidade. Pequenos gestos consistentes têm muito efeito.",
     quad: "Sua forma de cuidar nem sempre é a que ela precisa. Pergunte antes de resolver.",
-    trig: "Seu jeito acolhe o dela. Ela tende a se sentir segura ao seu lado.",
-    opos: "Você mostra o que ela busca fora. Seja constante para ela confiar.",
-    dist: "Você cuida do seu jeito, ela sente de outro. Escute o que faz diferença para ela.",
+    trig: "Seu jeito acolhe o dela, e ela tende a se sentir segura ao seu lado.",
+    opos: "Você oferece o que ela busca fora de si. Constância é o que sustenta a confiança.",
+    dist: "Você cuida do seu jeito e ela recebe de outro. Descubra o que faz diferença para ela, e não o que faria para você.",
   },
 };
 
@@ -69,12 +69,12 @@ export function compatibility(him: Chart, her: Chart): Couple {
   const score = Math.min(97, Math.round(pairs.reduce((a, p) => a + p.score, 0) / pairs.length) + bonus);
   const best = [...pairs].sort((a, b) => b.score - a.score)[0];
   const headline =
-    score >= 82 ? "Uma sintonia que flui naturalmente" :
-    score >= 72 ? "Química forte, com pontos para cuidar" :
-    "Diferentes, e é isso que torna interessante";
+    score >= 82 ? "Combinação que flui com naturalidade" :
+    score >= 72 ? "Química forte, com pontos que pedem atenção" :
+    "Estilos diferentes: pedem mais conversa, mas têm potencial";
   const e1 = SIGN_INFO[him.sun.sign].element, e2 = SIGN_INFO[her.sun.sign].element;
   const elementNote = e1 === e2
-    ? `Vocês são do elemento ${e1}: pensam e reagem de forma parecida. Seu ponto mais forte é ${best.title.toLowerCase()}.`
-    : `Você é ${e1} e ela é ${e2}: elementos diferentes trazem equilíbrio quando há escuta. Seu ponto mais forte é ${best.title.toLowerCase()}.`;
+    ? `Vocês são do elemento ${e1}: pensam e reagem de forma parecida. O ponto mais forte da combinação é ${best.title.toLowerCase()}.`
+    : `Você é ${e1} e ela é ${e2}: elementos diferentes se equilibram quando há escuta. O ponto mais forte da combinação é ${best.title.toLowerCase()}.`;
   return { score, headline, pairs, elementNote };
 }

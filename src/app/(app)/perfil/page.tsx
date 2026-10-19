@@ -49,7 +49,7 @@ export default async function Perfil() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="font-display text-xl">E-mail diário</h2>
-            <p className="text-sm text-muted">Enviado para {user.email || "seu e-mail"} com o momento dela e como conduzir o dia.</p>
+            <p className="text-sm text-muted">Resumo enviado para {user.email || "seu e-mail"} com a fase do ciclo, o que ajuda e o que evitar.</p>
           </div>
           <form action={sendTestEmail}><button className="btn btn-ghost w-full sm:w-auto">Enviar e-mail de teste</button></form>
         </div>

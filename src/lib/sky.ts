@@ -3,29 +3,29 @@ import { aspectBetween } from "./synastry";
 import type { PhaseKey } from "./cycle";
 
 const PHASE_TEXT: Record<string, string> = {
-  "Lua nova": "Fase de começos e de recolhimento. O clima pede calma e intenções simples, e não grandes decisões.",
-  "Crescente": "A energia vai subindo. Bom momento para planejar e começar coisas novas juntos.",
-  "Quarto crescente": "Hora de agir e resolver pendências. Pode surgir tensão por decisões que estavam adiadas.",
-  "Gibosa crescente": "Fase de ajustes e expectativa. Pode haver ansiedade antes do pico, então ajude a manter a calma.",
-  "Lua cheia": "Emoções no auge: tudo fica mais intenso, para o bem e para o mal. Sensibilidade, romance e também irritação sobem.",
-  "Gibosa minguante": "Clima de gratidão e de compartilhar. Bom momento para conversas sinceras e carinhosas.",
-  "Quarto minguante": "Hora de revisar e soltar o que pesa. Boa janela para ajustar combinados da relação.",
+  "Lua nova": "Fase de recolhimento e recomeço. O clima favorece intenções simples e conversas calmas, mais que grandes decisões.",
+  "Crescente": "A energia coletiva vai subindo. É um bom momento para planejar e começar algo novo juntos.",
+  "Quarto crescente": "Fase de ação e de resolver pendências. Decisões adiadas tendem a pedir resposta, o que pode gerar tensão.",
+  "Gibosa crescente": "Fase de ajustes e expectativa. A ansiedade antes do pico é comum, então ajude a manter o ritmo calmo.",
+  "Lua cheia": "Auge da luminosidade. Tradicionalmente associada a emoções mais intensas, para o bem (romance) e para o mal (irritação).",
+  "Gibosa minguante": "Fase de partilha e gratidão. Favorece conversas sinceras e reconhecer o que deu certo.",
+  "Quarto minguante": "Fase de revisão e de soltar o que pesa. Boa janela para ajustar combinados da relação.",
   "Minguante": "A energia desacelera. O dia pede descanso, casa e programas tranquilos.",
 };
 
 const SIGN_DAY: Record<Sign, { mood: string; tip: string }> = {
-  "Áries": { mood: "Dia de impulso e pressa: tudo fica mais direto e explosivo.", tip: "Não discuta no calor do momento. Espere esfriar." },
-  "Touro": { mood: "Dia de conforto, prazer e ritmo lento.", tip: "Uma boa refeição, toque e um ambiente gostoso resolvem muito." },
-  "Gêmeos": { mood: "Dia de papo, mensagens e curiosidade.", tip: "Mande uma mensagem leve e divertida. Conversa funciona mais que presente." },
-  "Câncer": { mood: "Dia emotivo, caseiro e protetor.", tip: "Ofereça acolhimento e uma noite em casa." },
-  "Leão": { mood: "Dia de brilho e de querer ser notada.", tip: "Elogie de forma sincera e valorize o que ela fez." },
-  "Virgem": { mood: "Dia prático, de organizar e cuidar de detalhes.", tip: "Ajude em tarefas concretas e evite críticas." },
-  "Libra": { mood: "Dia de harmonia, beleza e parceria.", tip: "Um programa a dois, bonito e tranquilo, cai bem." },
-  "Escorpião": { mood: "Dia intenso e profundo: emoções guardadas podem vir à tona.", tip: "Seja sincero e evite jogos. Ela percebe tudo." },
-  "Sagitário": { mood: "Dia de otimismo, liberdade e vontade de sair.", tip: "Proponha algo diferente ou ao ar livre." },
-  "Capricórnio": { mood: "Dia sério, focado em responsabilidade e metas.", tip: "Respeite o foco dela e reconheça o esforço." },
-  "Aquário": { mood: "Dia de independência, ideias e vontade de espaço.", tip: "Dê espaço sem se ofender e convide para algo original." },
-  "Peixes": { mood: "Dia sensível, sonhador e empático.", tip: "Carinho e silêncio confortável valem mais que explicações." },
+  "Áries": { mood: "Clima de impulso e pressa: as reações tendem a ser rápidas e diretas.", tip: "Se surgir atrito, adie a discussão por uma hora. A raiva do dia costuma passar rápido." },
+  "Touro": { mood: "Clima de conforto, prazer e ritmo lento. Corpo e rotina pesam mais que ideias.", tip: "Uma refeição bem feita e um ambiente agradável resolvem mais do que uma conversa longa." },
+  "Gêmeos": { mood: "Clima de conversa, mensagens e curiosidade. A cabeça está mais ativa que o corpo.", tip: "Uma mensagem leve durante o dia funciona melhor que um presente." },
+  "Câncer": { mood: "Clima emotivo e doméstico, com mais necessidade de segurança e de vínculo.", tip: "Proponha ficar em casa. Atenção ao que ela diz importa mais que o programa." },
+  "Leão": { mood: "Clima de expressão e de querer ser notada.", tip: "Reconheça algo específico que ela fez. Reconhecimento genérico pesa menos." },
+  "Virgem": { mood: "Clima prático, de organizar o cotidiano e perceber detalhes.", tip: "Ajude com uma tarefa concreta e evite críticas sobre ordem ou eficiência." },
+  "Libra": { mood: "Clima de harmonia, estética e parceria. Conflitos tendem a incomodar mais.", tip: "Um programa a dois, simples e bonito, cai bem. Evite assuntos tensos." },
+  "Escorpião": { mood: "Clima intenso e introspectivo, em que emoções guardadas podem vir à tona.", tip: "Seja direto e verdadeiro. Percebe-se facilmente quando algo é evasivo." },
+  "Sagitário": { mood: "Clima de otimismo, liberdade e vontade de sair da rotina.", tip: "Proponha algo diferente ou ao ar livre, sem muito planejamento." },
+  "Capricórnio": { mood: "Clima sério, focado em responsabilidades e metas.", tip: "Respeite o foco dela e reconheça o esforço em vez de pedir atenção." },
+  "Aquário": { mood: "Clima de independência, ideias e vontade de espaço.", tip: "Dê espaço sem se ofender e convide para algo fora do comum, sem insistir." },
+  "Peixes": { mood: "Clima sensível, sonhador e empático, em que o ambiente emocional pesa mais.", tip: "Presença tranquila vale mais que explicações. Fale pouco e escute." },
 };
 
 const VS_HER: Record<ReturnType<typeof aspectBetween>, string> = {
@@ -33,8 +33,8 @@ const VS_HER: Record<ReturnType<typeof aspectBetween>, string> = {
   trig: "O clima do dia combina com o jeito dela de sentir. Ótimo momento para carinho e conversas importantes.",
   sext: "O dia favorece o jeito dela de sentir. Aproveite para se aproximar.",
   quad: "O ritmo do dia contraria o que a Lua dela pede. Mais paciência e menos cobrança.",
-  opos: "O dia puxa para o lado oposto ao que ela precisa: ela pode querer o contrário do que o clima pede. Pergunte antes de supor.",
-  dist: "O dia não conversa muito com o jeito dela de sentir. Mantenha tudo simples e sem expectativa.",
+  opos: "O clima do dia puxa para o lado oposto ao que a Lua dela pede, então ela pode querer o contrário do que o ambiente sugere. Pergunte antes de supor.",
+  dist: "O clima do dia tem pouca relação com o jeito dela de sentir. Mantenha o dia simples e sem grandes expectativas.",
 };
 
 const CYCLE_NOTE: Record<PhaseKey, string> = {
@@ -51,6 +51,6 @@ export function skyReading(moonPhase: string, moonSign: Sign, herMoon: Sign, cyc
     phase: PHASE_TEXT[moonPhase] ?? "",
     sign: SIGN_DAY[moonSign],
     vsHer: VS_HER[aspect],
-    cross: CYCLE_NOTE[cycle] + (pms && intense ? " Com a TPM por perto e a Lua intensa, a sensibilidade pode vir em dobro." : ""),
+    cross: CYCLE_NOTE[cycle] + (pms && intense ? " Com a TPM por perto e a Lua intensa, a sensibilidade pode somar." : ""),
   };
 }

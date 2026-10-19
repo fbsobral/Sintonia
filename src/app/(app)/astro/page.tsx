@@ -49,7 +49,7 @@ export default async function Astro({ searchParams }: { searchParams: Promise<{ 
         : <CompleteProfile />)}
 
       <p className="px-2 text-center text-xs text-muted">
-        Horário de Brasília. Sem a hora de nascimento, Lua e Vênus são aproximadas. Ascendente e casas exigem hora e cidade. Astrologia é inspiração, não ciência.
+        Cálculos no horário de Brasília. Sem a hora de nascimento, a Lua e Vênus são aproximadas, e o ascendente exige hora e cidade. A astrologia é uma leitura simbólica, sem base científica.
       </p>
     </main>
   );
@@ -60,7 +60,7 @@ function CompleteProfile() {
     <section className="rise card p-6 text-center">
       <p className="text-4xl" aria-hidden>✦</p>
       <h2 className="font-display mt-2 text-2xl">Complete o seu mapa</h2>
-      <p className="mx-auto mt-1 max-w-sm text-muted">Informe sua data de nascimento para ver seu signo e a compatibilidade com ela.</p>
+      <p className="mx-auto mt-1 max-w-sm text-muted">Informe a sua data de nascimento para ver o seu signo e a compatibilidade com ela.</p>
       <Link href="/perfil#voce" className="btn mt-5">Adicionar meus dados</Link>
     </section>
   );
@@ -74,7 +74,7 @@ function Together({ him, her, name }: { him: Chart; her: Chart; name: string }) 
       <section className="rise card px-5 py-8 text-center lg:sticky lg:top-8">
         <Orbit a={hi.glyph} b={hr.glyph} />
         <p className="font-display mt-4 text-6xl leading-none"><span className="text-grad">{c.score}</span><span className="text-3xl text-muted">%</span></p>
-        <p className="mt-1 text-xs uppercase tracking-widest text-muted">de sintonia</p>
+        <p className="mt-1 text-xs uppercase tracking-widest text-muted">de compatibilidade astral</p>
         <h2 className="font-display mt-3 text-2xl leading-snug">{c.headline}</h2>
         <p className="mx-auto mt-2 max-w-sm text-sm text-muted">{c.elementNote}</p>
         <p className="mt-4 text-sm"><span className="text-accent">{him.sun.sign}</span> <span className="text-muted">+</span> <span className="text-rose">{her.sun.sign}</span> <span className="text-muted">· com {name}</span></p>
@@ -93,7 +93,7 @@ function Together({ him, her, name }: { him: Chart; her: Chart; name: string }) 
             <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-[#bfb0ff] to-[#ff7a9c]" style={{ width: `${p.score}%` }} /></div>
           </li>
         ))}
-        <li className="px-2 text-center text-xs text-muted">Um retrato do potencial de vocês, não uma sentença.</li>
+        <li className="px-2 text-center text-xs text-muted">Leitura simbólica: serve como ponto de partida para conversar, não como previsão.</li>
       </ul>
     </div>
   );

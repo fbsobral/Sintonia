@@ -2,8 +2,8 @@ type P = { name?: string; birthDate?: string; birthTime?: string | null; cycleMo
 
 export function PartnerFields({ v = {} }: { v?: P }) {
   const modes = [
-    { id: "D28", t: "28 dias", d: "Ciclo clássico" },
-    { id: "D31", t: "31 dias", d: "Ciclo mais longo" },
+    { id: "D28", t: "28 dias", d: "Duração mais comum" },
+    { id: "D31", t: "31 dias", d: "Um pouco mais longo" },
     { id: "IRREGULAR", t: "Irregular", d: "Varia bastante" },
   ];
   return (
@@ -14,7 +14,7 @@ export function PartnerFields({ v = {} }: { v?: P }) {
       <label className="block text-sm text-muted">Data de nascimento
         <input type="date" name="birthDate" required defaultValue={v.birthDate} max="2015-12-31" className="field mt-1" />
       </label>
-      <label className="block text-sm text-muted">Hora de nascimento <span className="opacity-70">(opcional, deixa o mapa mais preciso)</span>
+      <label className="block text-sm text-muted">Hora de nascimento <span className="opacity-70">(opcional: melhora a precisão do mapa)</span>
         <input type="time" name="birthTime" defaultValue={v.birthTime ?? ""} className="field mt-1" />
       </label>
       <fieldset>
@@ -29,7 +29,7 @@ export function PartnerFields({ v = {} }: { v?: P }) {
             </label>
           ))}
         </div>
-        <p className="mt-2 text-xs text-muted">Depois de 3 menstruações registradas, o app passa a usar a média real.</p>
+        <p className="mt-2 text-xs text-muted">Com 3 menstruações registradas, o app passa a usar a média real dos ciclos dela.</p>
       </fieldset>
       <label className="block text-sm text-muted">Duração da menstruação (dias)
         <input type="number" name="periodLength" min={2} max={10} defaultValue={v.periodLength ?? 5} inputMode="numeric" className="field mt-1" />

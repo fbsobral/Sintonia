@@ -15,9 +15,9 @@ const P = {
 } as const;
 export type IconName = keyof typeof P;
 
-export function Icon({ name, size = 20, className }: { name: IconName; size?: number; className?: string }) {
+export function Icon({ name, size = 20, className, style }: { name: IconName; size?: number; className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} style={style} aria-hidden>
       <path d={P[name]} />
     </svg>
   );

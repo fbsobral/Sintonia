@@ -30,7 +30,7 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
     <main className="space-y-5">
       <header className="rise">
         <h1 className="font-display text-3xl">Ciclos</h1>
-        <p className="text-sm text-muted">Registre cada menstruação. O Sintonia aprende o ritmo dela.</p>
+        <p className="text-sm text-muted">Registre o primeiro dia de cada menstruação. Quanto mais registros, mais precisa a previsão.</p>
       </header>
 
       <div className="space-y-5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0">
@@ -38,18 +38,18 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
       <section className="rise card p-5">
         <div className="flex items-baseline justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-muted">Ciclo usado</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-muted">Duração do ciclo</p>
             <p className="font-display text-4xl">{profile.length} <span className="text-lg text-muted">dias</span></p>
           </div>
           <div className="text-right text-sm text-muted">
             <p>Menstruação: {profile.periodLength} dias</p>
-            <p>{profile.source === "media" ? "Média dos registrados" : "Ritmo informado"}</p>
+            <p>{profile.source === "media" ? `Média de ${profile.intervals.length} ciclos` : "Ritmo informado"}</p>
           </div>
         </div>
         <p className="mt-3 rounded-xl bg-white/5 px-3 py-2 text-sm text-muted">
           {needed > 0
-            ? `Registre mais ${needed} menstruaç${needed > 1 ? "ões" : "ão"} para o app passar a usar a média real dela.`
-            : "Usando a média real dos ciclos registrados. Cada novo registro refina a previsão."}
+            ? `Faltam ${needed} registro${needed > 1 ? "s" : ""} para o app usar a média real dos ciclos dela. Até lá, ele usa o ritmo informado.`
+            : `Usando a média real dos ciclos registrados. Regularidade: ${profile.regularity === "regular" ? "regular" : profile.regularity === "moderada" ? "moderadamente variável" : profile.regularity === "irregular" ? "irregular" : "sem dados suficientes"}${profile.variability != null ? ` (variação de ±${profile.margin} dia${profile.margin > 1 ? "s" : ""})` : ""}.`}
         </p>
       </section>
 
@@ -93,6 +93,7 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
           </label>
           <label className="block text-sm text-muted">Último dia <span className="opacity-70">(opcional)</span>
             <input type="date" name="end" max={today} className="field mt-1" />
+            <span className="mt-1 block text-xs">Informar o último dia permite calcular a duração média da menstruação.</span>
           </label>
           <button className="btn w-full">Salvar</button>
         </form>
@@ -110,7 +111,7 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
               <li key={c.id} className="flex items-center justify-between py-3">
                 <div>
                   <p className="font-medium">{fmt(start, { day: "numeric", month: "long", year: "numeric" })}{end ? ` → ${fmt(end)}` : ""}</p>
-                  <p className="text-xs text-muted">{len ? `Ciclo de ${len} dias` : "Mais recente"}</p>
+                  <p className="text-xs text-muted">{len ? `Ciclo de ${len} dias` : "Ciclo em andamento"}</p>
                 </div>
                 <form action={deleteCycle}>
                   <input type="hidden" name="id" value={c.id} />
