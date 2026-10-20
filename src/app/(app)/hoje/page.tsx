@@ -131,8 +131,8 @@ export default async function Hoje({ searchParams }: { searchParams: Promise<{ d
         <div className="space-y-5">
           <section className="rise card p-5">
             <div className="flex items-center justify-between gap-2"><h2 className="eyebrow">Como ela pode estar</h2><span className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold" style={{ background: `${p.color}26`, color: p.color }}>{st.name}</span></div>
-            <p className="mt-2 text-[17px] leading-snug">{st.mood}</p>
-            <p className="mt-2 text-sm text-muted">{st.body}</p>
+            <p className="mt-2 text-[17px] leading-relaxed">{st.mood}</p>
+            <p className="mt-2 text-[15px] leading-relaxed text-muted">{st.body}</p>
             <div className="mt-4 grid grid-cols-3 gap-3">
               <Meter label="Energia" value={st.energy} color={p.color} />
               <Meter label="Sensib." value={st.sensitivity} color={p.color} />
@@ -140,7 +140,7 @@ export default async function Hoje({ searchParams }: { searchParams: Promise<{ d
             </div>
             <details className="group mt-4 rounded-2xl bg-white/5 px-4 py-3">
               <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-medium">Por que isso acontece<span className="text-lg text-muted transition-transform group-open:rotate-45" aria-hidden>+</span></summary>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{st.why}</p>
+              <p className="mt-2 text-[15px] leading-relaxed text-muted">{st.why}</p>
               <p className="mt-2 text-xs font-semibold tracking-wide" style={{ color: p.color }}>{st.hormones}</p>
             </details>
             <p className="mt-3 text-[11px] text-muted">Tendências médias. Cada mulher, e cada ciclo, é diferente: confirme conversando.</p>
@@ -156,17 +156,17 @@ export default async function Hoje({ searchParams }: { searchParams: Promise<{ d
           <div className="rise grid grid-cols-1 gap-3 sm:grid-cols-2">
             <section className="card p-5">
               <h2 className="eyebrow !text-emerald-300">O que ajuda</h2>
-              <ul className="mt-2 space-y-2.5 text-[15px] leading-snug">{st.do.map((x) => <li key={x} className="flex gap-2.5"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-400/20 text-emerald-300" aria-hidden><Icon name="check" size={12} /></span><span>{x}</span></li>)}</ul>
+              <ul className="mt-2 space-y-3 text-[15px] leading-relaxed">{st.do.map((x) => <li key={x} className="flex gap-2.5"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-400/20 text-emerald-300" aria-hidden><Icon name="check" size={12} /></span><span>{x}</span></li>)}</ul>
             </section>
             <section className="card p-5">
               <h2 className="eyebrow !text-rose-300">O que evitar</h2>
-              <ul className="mt-2 space-y-2.5 text-[15px] leading-snug">{st.avoid.map((x) => <li key={x} className="flex gap-2.5"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-rose-400/20 text-rose-300" aria-hidden><Icon name="x" size={12} /></span><span>{x}</span></li>)}</ul>
+              <ul className="mt-2 space-y-3 text-[15px] leading-relaxed">{st.avoid.map((x) => <li key={x} className="flex gap-2.5"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-rose-400/20 text-rose-300" aria-hidden><Icon name="x" size={12} /></span><span>{x}</span></li>)}</ul>
             </section>
           </div>
 
           <section className="rise card p-5">
             <h2 className="eyebrow flex items-center gap-1.5" style={{ color: p.color }}><Icon name="spark" size={14} />Ponto de atenção do dia</h2>
-            <p className="mt-2 text-lg leading-snug">{st.tip}</p>
+            <p className="mt-2 text-[17px] leading-relaxed">{st.tip}</p>
           </section>
 
           <section className="rise card p-5">
