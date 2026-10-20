@@ -1,4 +1,4 @@
-import { requirePartner } from "@/lib/session";
+import { requireCouple } from "@/lib/session";
 import Link from "next/link";
 import { fromDay, statusOn, toDay } from "@/lib/cycle";
 import { PHASES } from "@/lib/tips";
@@ -8,7 +8,20 @@ import { addCycle, deleteCycle } from "@/app/actions";
 export const metadata = { title: "Ciclos" };
 
 export default async function Ciclos({ searchParams }: { searchParams: Promise<{ m?: string }> }) {
-  const { partner, profile, today } = await requirePartner();
+  const { user, couple, partner, profile, today, viewer, paused } = await requireCouple();
+  const her = viewer === "her";
+  if (paused) {
+    return (
+      <main className="space-y-5">
+        <header className="rise"><h1 className="font-display text-3xl">Ciclos</h1></header>
+        <section className="rise card p-6 text-center">
+          <h2 className="font-display text-2xl">{partner.name} pausou o compartilhamento</h2>
+          <p className="mx-auto mt-2 max-w-sm text-muted">Os registros do ciclo voltam a aparecer aqui quando ela retomar.</p>
+        </section>
+      </main>
+    );
+  }
+  const who = (id: string | null) => (id ? (id === user.id ? "você" : couple.users.find((u) => u.id === id)?.name || (her ? "seu parceiro" : partner.name)) : null);
   const { m } = await searchParams;
   const offset = Math.max(-6, Math.min(12, Number(m) || 0));
 
@@ -30,7 +43,7 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
     <main className="space-y-5">
       <header className="rise">
         <h1 className="font-display text-3xl">Ciclos</h1>
-        <p className="text-sm text-muted">Registre o primeiro dia de cada menstruação. Quanto mais registros, mais precisa a previsão.</p>
+        <p className="text-sm text-muted">Registre o primeiro dia de cada menstruação. Quanto mais registros, mais precisa a previsão.{couple.users.length > 1 ? " O que um registra aparece para o outro." : ""}</p>
       </header>
 
       <div className="space-y-5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0">
@@ -48,7 +61,7 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
         </div>
         <p className="mt-3 rounded-xl bg-white/5 px-3 py-2 text-sm text-muted">
           {needed > 0
-            ? `Faltam ${needed} registro${needed > 1 ? "s" : ""} para o app usar a média real dos ciclos dela. Até lá, ele usa o ritmo informado.`
+            ? `Faltam ${needed} registro${needed > 1 ? "s" : ""} para o app usar a média real dos ciclos ${her ? "seus" : "dela"}. Até lá, ele usa o ritmo informado.`
             : `Usando a média real dos ciclos registrados. Regularidade: ${profile.regularity === "regular" ? "regular" : profile.regularity === "moderada" ? "moderadamente variável" : profile.regularity === "irregular" ? "irregular" : "sem dados suficientes"}${profile.variability != null ? ` (variação de ±${profile.margin} dia${profile.margin > 1 ? "s" : ""})` : ""}.`}
         </p>
       </section>
@@ -111,7 +124,7 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
               <li key={c.id} className="flex items-center justify-between py-3">
                 <div>
                   <p className="font-medium">{fmt(start, { day: "numeric", month: "long", year: "numeric" })}{end ? ` → ${fmt(end)}` : ""}</p>
-                  <p className="text-xs text-muted">{len ? `Ciclo de ${len} dias` : "Ciclo em andamento"}</p>
+                  <p className="text-xs text-muted">{len ? `Ciclo de ${len} dias` : "Ciclo em andamento"}{who(c.createdById) ? ` · registrado por ${who(c.createdById)}` : ""}</p>
                 </div>
                 <form action={deleteCycle}>
                   <input type="hidden" name="id" value={c.id} />

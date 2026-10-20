@@ -1,4 +1,5 @@
 import type { PhaseKey } from "./cycle";
+import { SELF_STAGES } from "./tips-self";
 
 /*
  * Base de conteúdo. Referências gerais: fisiologia do ciclo (ACOG), janela fértil (Wilcox et al., NEJM 1995)
@@ -539,10 +540,24 @@ export const STAGES: Record<PhaseKey, Stage[]> = {
   ],
 };
 
+export function stageIndex(phase: PhaseKey, phaseDay: number, phaseLength: number): number {
+  const n = STAGES[phase].length;
+  const raw = phaseLength > 0 ? Math.floor(((phaseDay - 1) / phaseLength) * n) : 0;
+  return Math.min(Math.max(Number.isFinite(raw) ? raw : 0, 0), n - 1);
+}
+
+/** Visão dele (padrão): orientações sobre ela. */
 export function stageFor(phase: PhaseKey, phaseDay: number, phaseLength: number): Stage {
-  const st = STAGES[phase];
-  const raw = phaseLength > 0 ? Math.floor(((phaseDay - 1) / phaseLength) * st.length) : 0;
-  return st[Math.min(Math.max(Number.isFinite(raw) ? raw : 0, 0), st.length - 1)];
+  return STAGES[phase][stageIndex(phase, phaseDay, phaseLength)];
+}
+
+/** Visão de quem menstrua: mesma fisiologia, em 1ª pessoa (o que sente, o que ajuda, o que pedir). */
+export function stageForViewer(phase: PhaseKey, phaseDay: number, phaseLength: number, viewer: "her" | "him"): Stage {
+  const i = stageIndex(phase, phaseDay, phaseLength);
+  const base = STAGES[phase][i];
+  if (viewer === "him") return base;
+  const self = SELF_STAGES[phase][i];
+  return { ...base, ...self, flag: self.flag };
 }
 
 export function pick<T>(arr: T[], seed: number) {

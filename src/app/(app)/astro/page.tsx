@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requirePartner } from "@/lib/session";
+import { requireCouple } from "@/lib/session";
 import { chartFor, daysToBirthday, reading, SIGN_INFO, skyToday, type Chart, type Who } from "@/lib/astro";
 import { compatibility } from "@/lib/synastry";
 import { dateStr } from "@/lib/cycle";
@@ -8,22 +8,44 @@ import { Orbit } from "@/components/Orbit";
 
 export const metadata = { title: "Astro" };
 
-type View = "nos" | "ela" | "voce";
+type View = "nos" | "outro" | "voce";
 
 export default async function Astro({ searchParams }: { searchParams: Promise<{ v?: string }> }) {
-  const { user, partner, today } = await requirePartner();
+  const { user, partner, today, viewer, other, paused } = await requireCouple();
   const { v } = await searchParams;
+  const her = viewer === "her";
   const herBd = dateStr(partner.birthDate);
-  const her = chartFor(herBd, partner.birthTime);
-  const him = user.birthDate ? chartFor(dateStr(user.birthDate), user.birthTime) : null;
-  const view: View = v === "ela" || v === "voce" ? v : "nos";
+  const herChart = chartFor(herBd, partner.birthTime);
+  // "Ele" = o parceiro: o próprio usuário (visão dele) ou o outro integrante do casal (visão dela)
+  const himUser = her ? other : user;
+  const himBd = himUser?.birthDate ? dateStr(himUser.birthDate) : null;
+  const himChart = himBd ? chartFor(himBd, himUser?.birthTime ?? null) : null;
+  const view: View = v === "outro" || v === "voce" ? v : "nos";
   const sky = skyToday();
 
+  if (paused) {
+    return (
+      <main className="space-y-5">
+        <header className="rise"><p className="eyebrow">Astrologia</p><h1 className="font-display mt-1 text-4xl">O céu de vocês</h1></header>
+        <section className="rise card p-6 text-center"><p className="text-muted">{partner.name} pausou o compartilhamento. O mapa dela volta a aparecer quando ela retomar.</p></section>
+      </main>
+    );
+  }
+
+  const himName = himUser?.name || (her ? "Seu parceiro" : "Você");
   const tabs: { id: View; label: string }[] = [
     { id: "nos", label: "Nós dois" },
-    { id: "ela", label: partner.name },
+    { id: "outro", label: her ? himName : partner.name },
     { id: "voce", label: "Você" },
   ];
+  const missing = her ? (
+    <section className="rise card p-6 text-center">
+      <p className="text-4xl" aria-hidden>✦</p>
+      <h2 className="font-display mt-2 text-2xl">{other ? "Falta o mapa dele" : "Convide seu parceiro"}</h2>
+      <p className="mx-auto mt-1 max-w-sm text-muted">{other ? "Quando ele informar a data de nascimento, o mapa dele e a compatibilidade aparecem aqui." : "Quando ele entrar e informar a data de nascimento, o mapa dele e a compatibilidade de vocês aparecem aqui."}</p>
+      {!other && <Link href="/convidar" className="btn mt-5">Convidar parceiro</Link>}
+    </section>
+  ) : <CompleteProfile />;
 
   return (
     <main className="space-y-5">
@@ -42,11 +64,13 @@ export default async function Astro({ searchParams }: { searchParams: Promise<{ 
         ))}
       </nav>
 
-      {view === "nos" && (him ? <Together him={him} her={her} name={partner.name} /> : <CompleteProfile />)}
-      {view === "ela" && <ChartView who="her" name={partner.name} chart={her} bd={herBd} bt={partner.birthTime} today={today} />}
-      {view === "voce" && (him && user.birthDate
-        ? <ChartView who="him" name={user.name || "Você"} chart={him} bd={dateStr(user.birthDate)} bt={user.birthTime} today={today} />
-        : <CompleteProfile />)}
+      {view === "nos" && (himChart ? <Together him={himChart} her={herChart} name={her ? himName : partner.name} viewer={viewer} /> : missing)}
+      {view === "outro" && (her
+        ? (himChart && himBd ? <ChartView who="him" viewer={viewer} name={himName} chart={himChart} bd={himBd} bt={himUser?.birthTime} today={today} /> : missing)
+        : <ChartView who="her" viewer={viewer} name={partner.name} chart={herChart} bd={herBd} bt={partner.birthTime} today={today} />)}
+      {view === "voce" && (her
+        ? <ChartView who="her" viewer={viewer} name={partner.name} chart={herChart} bd={herBd} bt={partner.birthTime} today={today} />
+        : himChart && himBd ? <ChartView who="him" viewer={viewer} name={user.name || "Você"} chart={himChart} bd={himBd} bt={user.birthTime} today={today} /> : missing)}
 
       <p className="px-2 text-center text-xs text-muted">
         Cálculos no horário de Brasília. Sem a hora de nascimento, a Lua e Vênus são aproximadas, e o ascendente exige hora e cidade. A astrologia é uma leitura simbólica, sem base científica.
@@ -66,8 +90,8 @@ function CompleteProfile() {
   );
 }
 
-function Together({ him, her, name }: { him: Chart; her: Chart; name: string }) {
-  const c = compatibility(him, her);
+function Together({ him, her, name, viewer }: { him: Chart; her: Chart; name: string; viewer: Who }) {
+  const c = compatibility(him, her, viewer);
   const hi = SIGN_INFO[him.sun.sign], hr = SIGN_INFO[her.sun.sign];
   return (
     <div className="space-y-5 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-start lg:gap-5 lg:space-y-0">
@@ -99,12 +123,12 @@ function Together({ him, her, name }: { him: Chart; her: Chart; name: string }) 
   );
 }
 
-function ChartView({ who, name, chart: c, bd, bt, today }: { who: Who; name: string; chart: Chart; bd: string; bt?: string | null; today: string }) {
+function ChartView({ who, viewer, name, chart: c, bd, bt, today }: { who: Who; viewer: Who; name: string; chart: Chart; bd: string; bt?: string | null; today: string }) {
   const rows = [
-    { k: "Sol", sub: "Essência", p: c.sun, text: reading(c.sun.sign, "essence", who) },
-    { k: "Lua", sub: "Emoções e necessidades", p: c.moon, text: reading(c.moon.sign, "moon", who) },
-    { k: "Vênus", sub: "Como ama", p: c.venus, text: reading(c.venus.sign, "venus", who) },
-    { k: "Marte", sub: "Desejo e conflito", p: c.mars, text: reading(c.mars.sign, "mars", who) },
+    { k: "Sol", sub: "Essência", p: c.sun, text: reading(c.sun.sign, "essence", who, viewer) },
+    { k: "Lua", sub: "Emoções e necessidades", p: c.moon, text: reading(c.moon.sign, "moon", who, viewer) },
+    { k: "Vênus", sub: "Como ama", p: c.venus, text: reading(c.venus.sign, "venus", who, viewer) },
+    { k: "Marte", sub: "Desejo e conflito", p: c.mars, text: reading(c.mars.sign, "mars", who, viewer) },
   ];
   const sunEl = SIGN_INFO[c.sun.sign].element;
   const [topEl, topN] = Object.entries(c.elements).sort((x, y) => y[1] - x[1])[0];

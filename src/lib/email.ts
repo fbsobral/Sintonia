@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import { chartFor, skyToday } from "./astro";
 import { skyReading } from "./sky";
-import { PHASES, pick, stageFor } from "./tips";
+import { PHASES, pick, stageForViewer } from "./tips";
 import { toDay, type Status } from "./cycle";
 import { short, shortRange } from "./format";
 
@@ -11,12 +11,13 @@ export type PartnerBirth = { birthDate: string; birthTime?: string | null };
 
 const REG = { regular: "regular", moderada: "moderadamente variável", irregular: "irregular", desconhecida: "sem dados suficientes" } as const;
 
-export function buildDailyEmail(partnerName: string, s: Status, today: string, birth: PartnerBirth) {
+export function buildDailyEmail(partnerName: string, s: Status, today: string, birth: PartnerBirth, viewer: "him" | "her" = "him") {
+  const her = viewer === "her";
   const p = PHASES[s.phase];
-  const st = stageFor(s.phase, s.phaseDay, s.phaseLength);
+  const st = stageForViewer(s.phase, s.phaseDay, s.phaseLength, viewer);
   const talk = pick(st.talk, toDay(today));
   const li = (items: string[]) => items.map((i) => `<li style="margin:0 0 8px">${i}</li>`).join("");
-  const subject = `${partnerName} hoje: ${st.name}${s.pms ? " · janela de TPM" : ""}`;
+  const subject = her ? `Hoje: ${st.name}${s.pms ? " · janela de TPM" : ""}` : `${partnerName} hoje: ${st.name}${s.pms ? " · janela de TPM" : ""}`;
   const [r0, r1] = s.nextRange;
   const next =
     s.daysToPeriod <= 0 ? "A menstruação está prevista para hoje." :
@@ -25,7 +26,7 @@ export function buildDailyEmail(partnerName: string, s: Status, today: string, b
   const fert = s.fertility === "baixa" ? "" : ` Fertilidade ${s.fertility}: se não planejam gravidez, usem proteção.`;
   const moon = chartFor(birth.birthDate, birth.birthTime ?? null).moon.sign;
   const sky = skyToday(new Date(`${today}T15:00:00Z`));
-  const read = skyReading(sky.moonPhase, sky.moonSign, moon, s.phase, s.pms);
+  const read = skyReading(sky.moonPhase, sky.moonSign, moon, s.phase, s.pms, viewer);
   const LV = ["", "muito baixa", "baixa", "média", "alta", "muito alta"];
   const meter = (label: string, v: number) =>
     `<td style="width:33%;padding-right:10px;vertical-align:top"><div style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#9A95B8">${label}</div><table role="presentation" style="width:100%;margin-top:5px;border-collapse:separate;border-spacing:3px 0"><tr>${[1, 2, 3, 4, 5].map((i) => `<td style="height:6px;border-radius:3px;background:${i <= v ? p.color : "#ffffff22"}"></td>`).join("")}</tr></table><div style="margin-top:4px;font-size:12px;color:#C9C5E0">${LV[v]}</div></td>`;
@@ -45,11 +46,11 @@ export function buildDailyEmail(partnerName: string, s: Status, today: string, b
   <h3 style="margin:26px 0 6px;font-size:15px">O que está acontecendo</h3>
   <p style="margin:0;line-height:1.6;color:#DCD8EE">${st.why}</p>
   <p style="margin:6px 0 0;font-size:13px;color:${p.color};font-weight:600">${st.hormones}</p>
-  <h3 style="margin:26px 0 6px;font-size:15px">O que ajuda</h3>
+  <h3 style="margin:26px 0 6px;font-size:15px">${her ? "O que pode ajudar você" : "O que ajuda"}</h3>
   <ul style="margin:0;padding-left:18px;line-height:1.55;color:#DCD8EE">${li(st.do)}</ul>
   <h3 style="margin:22px 0 6px;font-size:15px">O que evitar</h3>
   <ul style="margin:0;padding-left:18px;line-height:1.55;color:#DCD8EE">${li(st.avoid)}</ul>
-  <h3 style="margin:26px 0 6px;font-size:15px">Como abrir a conversa</h3>
+  <h3 style="margin:26px 0 6px;font-size:15px">${her ? "O que você pode dizer ao seu parceiro" : "Como abrir a conversa"}</h3>
   <p style="margin:0;padding:14px 16px;border-left:3px solid ${p.color};background:#ffffff0d;border-radius:8px;line-height:1.55;color:#fff">${talk}</p>
   <h3 style="margin:26px 0 6px;font-size:15px">Ponto de atenção</h3>
   <p style="margin:0;line-height:1.6;color:#DCD8EE">${st.tip}</p>
@@ -57,11 +58,11 @@ export function buildDailyEmail(partnerName: string, s: Status, today: string, b
   <h3 style="${h3}">Céu de hoje: ${sky.moonPhase} em ${sky.moonSign}</h3>
   <p style="margin:0 0 8px;line-height:1.6;color:#DCD8EE"><b style="color:#BFB0FF">O que a fase traz.</b> ${read.phase}</p>
   <p style="margin:0 0 8px;line-height:1.6;color:#DCD8EE"><b style="color:#BFB0FF">Lua em ${sky.moonSign}.</b> ${read.sign.mood}</p>
-  <p style="margin:0 0 8px;line-height:1.6;color:#DCD8EE"><b style="color:#BFB0FF">Com a Lua dela (${moon}).</b> ${read.vsHer}</p>
+  <p style="margin:0 0 8px;line-height:1.6;color:#DCD8EE"><b style="color:#BFB0FF">Com ${her ? "a sua Lua" : "a Lua dela"} (${moon}).</b> ${read.vsHer}</p>
   <p style="margin:0 0 8px;line-height:1.6;color:#DCD8EE"><b style="color:#BFB0FF">Junto com o ciclo.</b> ${read.cross}</p>
   <p style="margin:10px 0 0;padding:12px 14px;border-radius:12px;background:#ffffff0d;line-height:1.55;color:#fff"><b>Aplicação prática:</b> ${read.sign.tip}</p>
   <p style="margin:8px 0 0;font-size:12px;color:#7D7899">Leitura simbólica, sem base científica, usada como roteiro de conversa.</p>
-  <a href="${APP_URL}/hoje" style="display:inline-block;margin-top:28px;padding:13px 22px;border-radius:999px;background:#EDEAF7;color:#0F0D1F;text-decoration:none;font-weight:700">Ver no Sintonia</a>
+  <a href="${APP_URL}/hoje" style="display:inline-block;margin-top:28px;padding:13px 22px;border-radius:999px;background:#EDEAF7;color:#0F0D1F;text-decoration:none;font-weight:700">${her ? "Fazer meu check-in" : "Ver no Sintonia"}</a>
   <p style="margin-top:28px;font-size:12px;color:#7D7899;line-height:1.55">${conf}<br><br>Tendências médias, não diagnóstico: cada mulher e cada ciclo são diferentes, e as datas são estimativas feitas a partir dos ciclos registrados. Não use como método contraceptivo. Para parar de receber, desative em Perfil.</p>
 </div></body></html>`;
   return { subject, html };

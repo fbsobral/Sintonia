@@ -50,13 +50,35 @@ const TEXT: Record<Kind, Record<Aspect, string>> = {
   },
 };
 
+/** Trechos que mudam quando quem lê é ela (os demais são neutros). */
+const TEXT_HER: Partial<Record<Kind, Partial<Record<Aspect, string>>>> = {
+  lua: {
+    conj: "Vocês sentem de forma parecida, então você tende a se sentir compreendida por ele sem precisar explicar muito.",
+    quad: "O que acalma um pode agitar o outro. Diga a ele o que realmente te acalma, em vez de esperar que ele adivinhe.",
+  },
+  cuidado: {
+    conj: "Ele entende bem o que você sente. Isso ajuda, e ainda vale dizer o que você precisa, para ele não presumir.",
+    sext: "O jeito de cuidar dele chega até você com naturalidade. Gestos pequenos e constantes têm muito efeito.",
+    quad: "A forma de cuidar dele nem sempre é a que você precisa. Diga o que ajuda você, em vez de esperar que ele acerte sozinho.",
+    trig: "O jeito dele acolhe o seu, e você tende a se sentir segura ao lado dele.",
+    opos: "Ele oferece o que você busca fora de si. Constância é o que sustenta a confiança.",
+    dist: "Ele cuida do jeito dele e você recebe de outro. Mostre a ele o que faz diferença para você.",
+  },
+};
+
+const SUB: Record<"him" | "her", Record<Kind, string>> = {
+  him: { sol: "Seu Sol · Sol dela", lua: "Sua Lua · Lua dela", desejo: "Seu Marte · Vênus dela", cuidado: "Seu Sol · Lua dela" },
+  her: { sol: "Sol dele · Seu Sol", lua: "Lua dele · Sua Lua", desejo: "Marte dele · Sua Vênus", cuidado: "Sol dele · Sua Lua" },
+};
+
 export type Pair = { kind: Kind; title: string; sub: string; a: Sign; b: Sign; aspect: Aspect; label: string; text: string; score: number };
 export type Couple = { score: number; headline: string; pairs: Pair[]; elementNote: string };
 
-export function compatibility(him: Chart, her: Chart): Couple {
+export function compatibility(him: Chart, her: Chart, viewer: "him" | "her" = "him"): Couple {
   const mk = (kind: Kind, title: string, sub: string, a: Sign, b: Sign): Pair => {
     const aspect = aspectBetween(a, b);
-    return { kind, title, sub, a, b, aspect, label: ASPECT_LABEL[aspect], text: TEXT[kind][aspect], score: SCORE[aspect] };
+    const text = (viewer === "her" && TEXT_HER[kind]?.[aspect]) || TEXT[kind][aspect];
+    return { kind, title, sub: SUB[viewer][kind], a, b, aspect, label: ASPECT_LABEL[aspect], text, score: SCORE[aspect] };
   };
   const pairs = [
     mk("sol", "Essência", "Seu Sol · Sol dela", him.sun.sign, her.sun.sign),
@@ -75,6 +97,8 @@ export function compatibility(him: Chart, her: Chart): Couple {
   const e1 = SIGN_INFO[him.sun.sign].element, e2 = SIGN_INFO[her.sun.sign].element;
   const elementNote = e1 === e2
     ? `Vocês são do elemento ${e1}: pensam e reagem de forma parecida. O ponto mais forte da combinação é ${best.title.toLowerCase()}.`
-    : `Você é ${e1} e ela é ${e2}: elementos diferentes se equilibram quando há escuta. O ponto mais forte da combinação é ${best.title.toLowerCase()}.`;
+    : viewer === "her"
+      ? `Ele é ${e1} e você é ${e2}: elementos diferentes se equilibram quando há escuta. O ponto mais forte da combinação é ${best.title.toLowerCase()}.`
+      : `Você é ${e1} e ela é ${e2}: elementos diferentes se equilibram quando há escuta. O ponto mais forte da combinação é ${best.title.toLowerCase()}.`;
   return { score, headline, pairs, elementNote };
 }

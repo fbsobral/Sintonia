@@ -14,25 +14,50 @@ enum CycleMode {
   IRREGULAR
 }
 
-model User {
-  id          String   @id @default(cuid())
-  clerkId     String   @unique
-  email       String
-  emailDaily  Boolean  @default(true)
-  sendHour    Int      @default(8)
-  timezone    String   @default("America/Sao_Paulo")
-  lastEmailOn String? // YYYY-MM-DD do último envio diário
-  name        String?
-  birthDate   DateTime? @db.Date
-  birthTime   String? // HH:mm (opcional)
-  createdAt   DateTime @default(now())
-  partner     Partner?
+/// CYCLE = quem menstrua (dona dos dados do ciclo). PARTNER = quem acompanha.
+enum Role {
+  CYCLE
+  PARTNER
 }
 
+model Couple {
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  /// Controlado por quem menstrua: o parceiro só enxerga o ciclo enquanto estiver ligado.
+  shareCycle Boolean   @default(true)
+  users      User[]
+  profile    Partner?
+  invites    Invite[]
+  checkIns   CheckIn[]
+  signals    Signal[]
+}
+
+model User {
+  id           String    @id @default(cuid())
+  clerkId      String    @unique
+  email        String
+  role         Role?
+  coupleId     String?
+  couple       Couple?   @relation(fields: [coupleId], references: [id], onDelete: SetNull)
+  onboardedAt  DateTime?
+  emailDaily   Boolean   @default(true)
+  notifyEvents Boolean   @default(true)
+  sendHour     Int       @default(8)
+  timezone     String    @default("America/Sao_Paulo")
+  lastEmailOn  String? // YYYY-MM-DD do último envio diário
+  name         String?
+  birthDate    DateTime? @db.Date
+  birthTime    String? // HH:mm (opcional)
+  createdAt    DateTime  @default(now())
+
+  @@index([coupleId])
+}
+
+/// Perfil de ciclo de quem menstrua. Pertence ao casal.
 model Partner {
   id           String    @id @default(cuid())
-  userId       String    @unique
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coupleId     String    @unique
+  couple       Couple    @relation(fields: [coupleId], references: [id], onDelete: Cascade)
   name         String
   birthDate    DateTime  @db.Date
   birthTime    String? // HH:mm (opcional)
@@ -43,13 +68,61 @@ model Partner {
 }
 
 model Cycle {
-  id        String    @id @default(cuid())
-  partnerId String
-  partner   Partner   @relation(fields: [partnerId], references: [id], onDelete: Cascade)
-  startDate DateTime  @db.Date
-  endDate   DateTime? @db.Date
-  createdAt DateTime  @default(now())
+  id          String    @id @default(cuid())
+  partnerId   String
+  partner     Partner   @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  startDate   DateTime  @db.Date
+  endDate     DateTime? @db.Date
+  createdById String?
+  createdAt   DateTime  @default(now())
 
   @@unique([partnerId, startDate])
   @@index([partnerId, startDate])
+}
+
+model Invite {
+  id           String    @id @default(cuid())
+  token        String    @unique
+  coupleId     String
+  couple       Couple    @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  invitedById  String
+  /// Papel que a pessoa convidada vai assumir.
+  role         Role
+  email        String?
+  expiresAt    DateTime
+  acceptedAt   DateTime?
+  acceptedById String?
+  createdAt    DateTime  @default(now())
+
+  @@index([coupleId])
+}
+
+/// Como ela está no dia. Só quem menstrua escreve; `note` nunca é compartilhada.
+model CheckIn {
+  id        String   @id @default(cuid())
+  coupleId  String
+  couple    Couple   @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  date      DateTime @db.Date
+  moods     String[]
+  symptoms  String[]
+  flow      String?
+  libido    Int?
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([coupleId, date])
+}
+
+/// Pedido rápido dela ao parceiro ("preciso de espaço", "preciso de ajuda"...).
+model Signal {
+  id        String    @id @default(cuid())
+  coupleId  String
+  couple    Couple    @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  kind      String
+  date      DateTime  @db.Date
+  seenAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([coupleId, date])
 }
