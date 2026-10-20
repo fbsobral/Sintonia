@@ -14,15 +14,18 @@ const TABS = [
 ];
 
 /** Barra inferior no celular; barra lateral a partir de md. */
-export function TabBar() {
+const ADMIN_TAB = { href: "/admin", label: "Admin", icon: I("M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3zM9 12l2 2 4-4") };
+
+export function TabBar({ isAdmin = false }: { isAdmin?: boolean }) {
   const path = usePathname();
+  const tabs = isAdmin ? [...TABS, ADMIN_TAB] : TABS;
   return (
     <nav aria-label="Principal"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-[#0d0a20]/85 backdrop-blur-2xl md:inset-y-0 md:right-auto md:w-60 md:border-r md:border-t-0 md:bg-[#120f26]/70 md:px-4 md:py-8"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       <Link href="/hoje" aria-label="Sintonia" className="mb-8 hidden px-3 md:block"><Logo size={30} /></Link>
       <ul className="mx-auto flex max-w-md md:max-w-none md:flex-col md:gap-1">
-        {TABS.map((t) => {
+        {tabs.map((t) => {
           const on = path.startsWith(t.href);
           return (
             <li key={t.href} className="flex-1 md:flex-none">
