@@ -293,11 +293,19 @@ export function OnboardingFlow({ variant: initial, prefill = {} }: { variant: Va
                 ].map((t) => <li key={t} className="flex gap-2.5"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-400/20 text-emerald-300"><Icon name="check" size={12} /></span><span>{t}</span></li>)}
                 <li className="flex gap-2.5"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-white/10 text-muted"><Icon name="lock" size={12} /></span><span><b>Nunca compartilhado:</b> as anotações pessoais do check-in.</span></li>
               </ul>
-              <label className="mt-5 flex min-h-[56px] cursor-pointer items-center gap-3 rounded-2xl border border-line bg-white/5 px-4">
-                <input type="checkbox" checked={share} onChange={(e) => setShare(e.target.checked)} className="h-5 w-5 accent-[#b9a8ff]" />
-                <span className="text-[15px]">Compartilhar o meu ciclo com meu parceiro</span>
-              </label>
-              <p className="mt-2 text-xs text-muted">Você pode pausar ou retomar quando quiser, em Perfil.</p>
+              {variant === "join-cycle" ? (
+                <p className="mt-5 rounded-2xl border border-line bg-white/5 p-4 text-[15px] leading-relaxed text-muted">
+                  Como {other || "seu parceiro"} convidou você, o compartilhamento já começa ligado. Você pode pausar ou retomar quando quiser, em Perfil.
+                </p>
+              ) : (
+                <>
+                  <label className="mt-5 flex min-h-[56px] cursor-pointer items-center gap-3 rounded-2xl border border-line bg-white/5 px-4">
+                    <input type="checkbox" checked={share} onChange={(e) => setShare(e.target.checked)} className="h-5 w-5 accent-[#b9a8ff]" />
+                    <span className="text-[15px]">Compartilhar o meu ciclo com meu parceiro</span>
+                  </label>
+                  <p className="mt-2 text-xs text-muted">Você pode pausar ou retomar quando quiser, em Perfil.</p>
+                </>
+              )}
             </Ask>
           ) : (
             <Ask eyebrow="Privacidade" title="Ela decide o que compartilha" sub="Os dados do ciclo pertencem a quem menstrua. O que você vê depende da escolha dela.">
