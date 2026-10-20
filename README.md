@@ -28,5 +28,6 @@ npm run dev
    curl -fsS -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/daily
    ```
    Cada usuário recebe 1 e-mail/dia, a partir da hora escolhida no fuso dele.
-6. **Resend**: verifique seu domínio e ajuste `RESEND_FROM`.
-7. **Clerk**: adicione o domínio de produção e use as chaves *live*.
+6. **Painel admin**: defina `ADMIN_EMAILS` (e-mails separados por vírgula, iguais aos da conta no Clerk). Quem entrar com esses e-mails acessa `/admin` (usuários, casais e registro de ações). O painel só mostra metadados, nunca datas de ciclo, check-ins ou anotações.
+7. **Resend**: verifique seu domínio e ajuste `RESEND_FROM`.
+8. **Clerk**: adicione o domínio de produção e use as chaves *live*.

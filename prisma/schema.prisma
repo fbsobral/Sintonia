@@ -40,6 +40,8 @@ model User {
   coupleId     String?
   couple       Couple?   @relation(fields: [coupleId], references: [id], onDelete: SetNull)
   onboardedAt  DateTime?
+  isAdmin      Boolean   @default(false)
+  suspendedAt  DateTime?
   emailDaily   Boolean   @default(true)
   notifyEvents Boolean   @default(true)
   sendHour     Int       @default(8)
@@ -125,4 +127,18 @@ model Signal {
   createdAt DateTime  @default(now())
 
   @@index([coupleId, date])
+}
+
+/// Registro de auditoria das ações do painel admin.
+model AdminLog {
+  id           String   @id @default(cuid())
+  adminId      String
+  adminEmail   String
+  action       String
+  targetUserId String?
+  targetLabel  String?
+  meta         String?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
 }

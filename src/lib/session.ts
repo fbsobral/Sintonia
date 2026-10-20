@@ -2,6 +2,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "./db";
 import { buildProfile, dateStr, todayIn } from "./cycle";
+import { isAdminUser, isEnvAdmin } from "./admin-config";
 
 const coupleInclude = {
   users: true,
@@ -16,6 +17,11 @@ export async function getUser() {
     const cu = await currentUser();
     const email = cu?.primaryEmailAddress?.emailAddress ?? cu?.emailAddresses[0]?.emailAddress ?? "";
     user = await db.user.create({ data: { clerkId: userId, email }, include: { couple: { include: coupleInclude } } });
+  }
+  if (user.suspendedAt) redirect("/suspenso");
+  // Admin definido pelo ambiente: grava a flag para aparecer nas listas do painel
+  if (!user.isAdmin && isEnvAdmin(user.email)) {
+    user = await db.user.update({ where: { id: user.id }, data: { isAdmin: true }, include: { couple: { include: coupleInclude } } });
   }
   return user;
 }
@@ -40,7 +46,7 @@ export async function requireCouple() {
     partner.cycleMode,
     partner.periodLength,
   );
-  return { user, couple, partner, profile, today: todayIn(user.timezone), viewer, other, herUser, paused };
+  return { user, couple, partner, profile, today: todayIn(user.timezone), viewer, other, herUser, paused, isAdmin: isAdminUser(user) };
 }
 
 /** Compatibilidade com o nome antigo. */

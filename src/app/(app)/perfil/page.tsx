@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import { db } from "@/lib/db";
 import { requireCouple } from "@/lib/session";
@@ -12,7 +13,7 @@ export const metadata = { title: "Perfil" };
 const MODE = { D28: "28 dias", D31: "31 dias", IRREGULAR: "Irregular" } as const;
 
 export default async function Perfil() {
-  const { user, couple, partner, viewer, other, herUser } = await requireCouple();
+  const { user, couple, partner, viewer, other, herUser, isAdmin } = await requireCouple();
   const her = viewer === "her";
   const role = her ? "PARTNER" : "CYCLE";
   const pending = other
@@ -38,6 +39,13 @@ export default async function Perfil() {
         </div>
         <UserButton />
       </header>
+
+      {isAdmin && (
+        <Link href="/admin" className="rise card flex items-center justify-between gap-3 p-4 transition hover:bg-white/10">
+          <span className="text-[15px]"><b>Painel admin</b><span className="block text-sm text-muted">Gerenciar usuários, casais e ver o registro de ações.</span></span>
+          <Icon name="arrow" className="shrink-0 text-accent" />
+        </Link>
+      )}
 
       {/* Casal */}
       <section id="casal" className="rise card scroll-mt-6 p-5 md:p-6">

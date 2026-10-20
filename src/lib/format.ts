@@ -7,3 +7,6 @@ export const inDays = (n: number) => (n <= 0 ? "hoje" : n === 1 ? "amanhã" : `e
 export const short = (s: string) => fmt(s).replace(" de ", " ").replace(".", "");
 /** "23 out – 2 nov" */
 export const shortRange = (a: string, b: string) => `${short(a)} – ${short(b)}`;
+
+/** "20/10/26 14:35" no fuso de Brasília. */
+export const dt = (d: Date) => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(d);
