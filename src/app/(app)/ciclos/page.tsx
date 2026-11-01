@@ -3,11 +3,11 @@ import Link from "next/link";
 import { fromDay, statusOn, toDay } from "@/lib/cycle";
 import { PHASES } from "@/lib/tips";
 import { fmt } from "@/lib/format";
-import { addCycle, deleteCycle } from "@/app/actions";
+import { addCycle, deleteCycle, updateCycle } from "@/app/actions";
 
 export const metadata = { title: "Ciclos" };
 
-export default async function Ciclos({ searchParams }: { searchParams: Promise<{ m?: string }> }) {
+export default async function Ciclos({ searchParams }: { searchParams: Promise<{ m?: string; edit?: string }> }) {
   const { user, couple, partner, profile, today, viewer, paused } = await requireCouple();
   const her = viewer === "her";
   if (paused) {
@@ -22,7 +22,7 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
     );
   }
   const who = (id: string | null) => (id ? (id === user.id ? "você" : couple.users.find((u) => u.id === id)?.name || (her ? "seu parceiro" : partner.name)) : null);
-  const { m } = await searchParams;
+  const { m, edit } = await searchParams;
   const offset = Math.max(-6, Math.min(12, Number(m) || 0));
 
   const [ty, tm] = today.split("-").map(Number);
@@ -38,6 +38,9 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
 
   const needed = Math.max(0, 3 - profile.starts.length);
   const history = [...partner.cycles].reverse();
+  const editing = edit ? partner.cycles.find((c) => c.id === edit) : undefined;
+  const editStart = editing?.startDate.toISOString().slice(0, 10);
+  const editEnd = editing?.endDate?.toISOString().slice(0, 10);
 
   return (
     <main className="space-y-5">
@@ -99,16 +102,18 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
       </div>
       <div className="space-y-5">
       <section className="rise card p-5">
-        <h2 className="font-display text-xl">Registrar menstruação</h2>
-        <form action={addCycle} className="mt-3 space-y-3">
+        <h2 className="font-display text-xl">{editing ? "Editar menstruação" : "Registrar menstruação"}</h2>
+        <form key={editing?.id ?? "new"} action={editing ? updateCycle : addCycle} className="mt-3 space-y-3">
+          {editing && <input type="hidden" name="id" value={editing.id} />}
           <label className="block text-sm text-muted">Primeiro dia
-            <input type="date" name="start" required max={today} className="field mt-1" />
+            <input type="date" name="start" required max={today} defaultValue={editStart} className="field mt-1" />
           </label>
           <label className="block text-sm text-muted">Último dia <span className="opacity-70">(opcional)</span>
-            <input type="date" name="end" className="field mt-1" />
+            <input type="date" name="end" defaultValue={editEnd} className="field mt-1" />
             <span className="mt-1 block text-xs">Informar o último dia permite calcular a duração média da menstruação.</span>
           </label>
           <button className="btn w-full">Salvar</button>
+          {editing && <Link href="/ciclos" className="block text-center text-sm text-muted">Cancelar edição</Link>}
         </form>
       </section>
 
@@ -126,10 +131,13 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
                   <p className="font-medium">{fmt(start, { day: "numeric", month: "long", year: "numeric" })}{end ? ` → ${fmt(end)}` : ""}</p>
                   <p className="text-xs text-muted">{len ? `Ciclo de ${len} dias` : "Ciclo em andamento"}{who(c.createdById) ? ` · registrado por ${who(c.createdById)}` : ""}</p>
                 </div>
+                <div className="flex items-center">
+                <Link href={`/ciclos?edit=${c.id}`} scroll aria-label="Editar registro" className="grid h-11 w-11 place-items-center rounded-full text-muted hover:bg-white/5">✎</Link>
                 <form action={deleteCycle}>
                   <input type="hidden" name="id" value={c.id} />
                   <button className="grid h-11 w-11 place-items-center rounded-full text-muted hover:bg-white/5" aria-label="Remover registro">✕</button>
                 </form>
+                </div>
               </li>
             );
           })}

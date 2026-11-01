@@ -240,6 +240,21 @@ export async function addCycle(fd: FormData) {
   }
 }
 
+export async function updateCycle(fd: FormData) {
+  const { partner, paused } = await requireCouple();
+  if (paused) return;
+  const id = String(fd.get("id"));
+  const start = date.parse(fd.get("start"));
+  const endRaw = fd.get("end");
+  const end = endRaw ? date.parse(endRaw) : null;
+  if (end && (end < start || toDay(end) - toDay(start) > 15)) return;
+  const clash = await db.cycle.findFirst({ where: { partnerId: partner.id, startDate: asDate(start), NOT: { id } } });
+  if (clash) return;
+  await db.cycle.updateMany({ where: { id, partnerId: partner.id }, data: { startDate: asDate(start), endDate: end ? asDate(end) : null } });
+  refresh();
+  redirect("/ciclos");
+}
+
 export async function deleteCycle(fd: FormData) {
   const { partner, paused } = await requireCouple();
   if (paused) return;
