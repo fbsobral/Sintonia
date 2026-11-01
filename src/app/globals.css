@@ -56,6 +56,7 @@ body > * { position: relative; z-index: 1; }
   width: 100%; background: #ffffff0d; border: 1px solid var(--line); border-radius: 1rem;
   padding: 1rem 1.1rem; font-size: 16px; color: var(--text); outline: none; transition: border-color .2s, box-shadow .2s, background .2s;
 }
+input.field[type="date"] { display: block; min-width: 0; max-width: 100%; min-height: 3.4rem; -webkit-appearance: none; appearance: none; text-align: left; }
 .field:focus { border-color: var(--accent); background: #ffffff14; box-shadow: 0 0 0 4px #bfb0ff26; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: .55rem;
