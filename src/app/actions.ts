@@ -7,7 +7,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { getUser, requireCouple } from "@/lib/session";
 import { buildDailyEmail, sendEmail } from "@/lib/email";
-import { statusOn, todayIn } from "@/lib/cycle";
+import { statusOn, toDay, todayIn } from "@/lib/cycle";
 import { FLOWS, LIBIDO, MOODS, SYMPTOMS, isSignal } from "@/lib/checkin";
 import { emailCycleRegistered, emailInvite, emailSignal } from "@/lib/notify";
 import { fmt } from "@/lib/format";
@@ -225,7 +225,8 @@ export async function addCycle(fd: FormData) {
   const start = date.parse(fd.get("start"));
   const endRaw = fd.get("end");
   const end = endRaw ? date.parse(endRaw) : null;
-  if (end && end < start) return;
+  // O último dia pode ser no futuro (menstruação em andamento), mas precisa vir depois do início e ser plausível.
+  if (end && (end < start || toDay(end) - toDay(start) > 15)) return;
   const existed = await db.cycle.findUnique({ where: { partnerId_startDate: { partnerId: partner.id, startDate: asDate(start) } } });
   await db.cycle.upsert({
     where: { partnerId_startDate: { partnerId: partner.id, startDate: asDate(start) } },

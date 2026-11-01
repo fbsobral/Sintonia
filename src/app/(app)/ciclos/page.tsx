@@ -105,7 +105,7 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
             <input type="date" name="start" required max={today} className="field mt-1" />
           </label>
           <label className="block text-sm text-muted">Último dia <span className="opacity-70">(opcional)</span>
-            <input type="date" name="end" max={today} className="field mt-1" />
+            <input type="date" name="end" className="field mt-1" />
             <span className="mt-1 block text-xs">Informar o último dia permite calcular a duração média da menstruação.</span>
           </label>
           <button className="btn w-full">Salvar</button>
