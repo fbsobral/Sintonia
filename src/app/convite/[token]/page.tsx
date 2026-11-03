@@ -6,7 +6,7 @@ import { Logo } from "@/components/Logo";
 import { Stars } from "@/components/Orbit";
 import { Icon } from "@/components/Icon";
 
-export const metadata = { title: "Convite" };
+export const metadata = { title: "Convite", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 const ERRORS: Record<string, string> = {

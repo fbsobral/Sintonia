@@ -2,7 +2,8 @@ import { SignOutButton } from "@clerk/nextjs";
 import { Logo } from "@/components/Logo";
 import { Stars } from "@/components/Orbit";
 
-export const metadata = { title: "Conta suspensa" };
+export const metadata = { title: "Conta suspensa", robots: { index: false, follow: false } };
+export const dynamic = "force-dynamic";
 
 export default function Suspenso() {
   return (

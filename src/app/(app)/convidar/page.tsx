@@ -3,12 +3,13 @@ import { db } from "@/lib/db";
 import { requireCouple } from "@/lib/session";
 import { InviteCard } from "@/components/InviteCard";
 import { redirect } from "next/navigation";
+import { Notice } from "@/components/Notice";
 
 export const metadata = { title: "Convidar" };
 
-export default async function Convidar({ searchParams }: { searchParams: Promise<{ novo?: string }> }) {
+export default async function Convidar({ searchParams }: { searchParams: Promise<{ novo?: string; erro?: string }> }) {
   const { couple, viewer, other } = await requireCouple();
-  const { novo } = await searchParams;
+  const { novo, erro } = await searchParams;
   if (other) redirect("/hoje");
   const role = viewer === "her" ? "PARTNER" : "CYCLE";
   const pending = await db.invite.findFirst({
@@ -29,6 +30,7 @@ export default async function Convidar({ searchParams }: { searchParams: Promise
         </p>
       </header>
 
+      <Notice erro={erro} />
       <InviteCard pending={pending} forPartner={her} />
 
       <section className="rise card p-5 md:p-6">

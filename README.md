@@ -31,3 +31,6 @@ npm run dev
 6. **Painel admin**: defina `ADMIN_EMAILS` (e-mails separados por vírgula, iguais aos da conta no Clerk). Quem entrar com esses e-mails acessa `/admin` (usuários, casais e registro de ações). O painel só mostra metadados, nunca datas de ciclo, check-ins ou anotações.
 7. **Resend**: verifique seu domínio e ajuste `RESEND_FROM`.
 8. **Clerk**: adicione o domínio de produção e use as chaves *live*.
+
+## Segurança
+Veja [SECURITY.md](SECURITY.md): o que o app protege, riscos aceitos e o checklist de configuração (Clerk, Coolify, Resend).

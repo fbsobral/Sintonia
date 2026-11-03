@@ -18,7 +18,7 @@ export const viewport: Viewport = { themeColor: "#0b0919", width: "device-width"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider localization={ptBR} appearance={{ theme: dark, variables: { colorPrimary: "#b9a8ff", colorBackground: "#1a1730" } }}>
+    <ClerkProvider dynamic localization={ptBR} appearance={{ theme: dark, variables: { colorPrimary: "#b9a8ff", colorBackground: "#1a1730" } }}>
       <html lang="pt-BR" className={`${inter.variable} ${fraunces.variable}`}>
         <body className="antialiased">{children}</body>
       </html>

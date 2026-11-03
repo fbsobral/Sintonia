@@ -4,6 +4,16 @@ import { db } from "./db";
 import { buildProfile, dateStr, todayIn } from "./cycle";
 import { isAdminUser, isEnvAdmin } from "./admin-config";
 
+/** Promove a admin quando o e-mail está em ADMIN_EMAILS E verificado no Clerk (nunca só pela string). */
+export async function promoteEnvAdmin<T extends { id: string; email: string; isAdmin: boolean }>(user: T): Promise<boolean> {
+  if (user.isAdmin || !isEnvAdmin(user.email)) return user.isAdmin;
+  const cu = await currentUser();
+  const ok = !!cu?.emailAddresses.some((e) => e.emailAddress.toLowerCase() === user.email.toLowerCase() && e.verification?.status === "verified");
+  if (!ok) return false;
+  await db.user.update({ where: { id: user.id }, data: { isAdmin: true } });
+  return true;
+}
+
 const coupleInclude = {
   users: true,
   profile: { include: { cycles: { orderBy: { startDate: "asc" as const } } } },
@@ -19,9 +29,8 @@ export async function getUser() {
     user = await db.user.create({ data: { clerkId: userId, email }, include: { couple: { include: coupleInclude } } });
   }
   if (user.suspendedAt) redirect("/suspenso");
-  // Admin definido pelo ambiente: grava a flag para aparecer nas listas do painel
-  if (!user.isAdmin && isEnvAdmin(user.email)) {
-    user = await db.user.update({ where: { id: user.id }, data: { isAdmin: true }, include: { couple: { include: coupleInclude } } });
+  if (!user.isAdmin && (await promoteEnvAdmin(user))) {
+    user = await db.user.findUniqueOrThrow({ where: { id: user.id }, include: { couple: { include: coupleInclude } } });
   }
   return user;
 }

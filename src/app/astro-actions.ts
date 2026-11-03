@@ -1,6 +1,8 @@
 "use server";
 
 import { z } from "zod";
+import { auth } from "@clerk/nextjs/server";
+import { rateLimit } from "@/lib/rate-limit";
 import { chartFor, reading, SIGN_INFO, type Who } from "@/lib/astro";
 import { compatibility } from "@/lib/synastry";
 
@@ -18,11 +20,20 @@ const view = (d: string, t: string | undefined, who: Who, viewer: Who) => {
   };
 };
 
+/** Ações de servidor são endpoints públicos: exigem login e têm limite por pessoa. */
+async function guard() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Não autenticado");
+  if (!(await rateLimit(`reveal:${userId}`, 120, 60)).ok) throw new Error("Muitas tentativas");
+}
+
 export async function revealSign(d: string, t: string | undefined, who: string, viewer: string) {
+  await guard();
   return view(date.parse(d), time.parse(t ?? ""), asWho(who), asWho(viewer));
 }
 
 export async function revealCouple(himDate: string, himTime: string, herDate: string, herTime: string, viewer: string) {
+  await guard();
   const v = asWho(viewer);
   const a = chartFor(date.parse(himDate), time.parse(himTime) || null);
   const b = chartFor(date.parse(herDate), time.parse(herTime) || null);

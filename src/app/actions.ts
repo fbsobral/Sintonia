@@ -11,11 +11,20 @@ import { statusOn, toDay, todayIn } from "@/lib/cycle";
 import { FLOWS, LIBIDO, MOODS, SYMPTOMS, isSignal } from "@/lib/checkin";
 import { emailCycleRegistered, emailInvite, emailSignal } from "@/lib/notify";
 import { fmt } from "@/lib/format";
+import { rateLimit } from "@/lib/rate-limit";
+import { acceptInviteFor } from "@/lib/invites";
+import { clerkClient } from "@clerk/nextjs/server";
 
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const time = z.string().regex(/^\d{2}:\d{2}$/).optional().or(z.literal(""));
 const asDate = (s: string) => new Date(`${s}T00:00:00Z`);
 const refresh = () => revalidatePath("/", "layout");
+
+/** Barra a ação (e volta à tela com aviso) quando a pessoa excede o limite da janela. */
+async function limited(key: string, limit: number, windowSec: number, back: string) {
+  const r = await rateLimit(key, limit, windowSec);
+  if (!r.ok) redirect(`${back}?erro=limite`);
+}
 
 const cycleFields = z.object({
   cycleMode: z.enum(["D28", "D31", "IRREGULAR"]),
@@ -129,13 +138,18 @@ async function ensureInvite() {
 }
 
 export async function createInvite() {
+  const { user } = await requireCouple();
+  await limited(`create-invite:${user.id}`, 10, 3600, "/perfil");
   await ensureInvite();
   revalidatePath("/perfil");
   revalidatePath("/convidar");
 }
 
 export async function sendInviteEmail(fd: FormData) {
-  const email = z.string().trim().email().parse(fd.get("email"));
+  const email = z.string().trim().toLowerCase().email().max(200).parse(fd.get("email"));
+  const { user } = await requireCouple();
+  await limited(`invite-email:${user.id}`, 5, 3600, "/perfil");
+  await limited(`invite-email-to:${email}`, 3, 86_400, "/perfil"); // não deixa usar o app para encher a caixa de alguém
   const { ctx, invite } = await ensureInvite();
   if (!invite) return;
   await db.invite.update({ where: { id: invite.id }, data: { email } });
@@ -153,19 +167,14 @@ export async function revokeInvite(fd: FormData) {
 }
 
 export async function acceptInvite(fd: FormData) {
-  const token = String(fd.get("token"));
+  const token = z.string().regex(/^[\w-]{10,64}$/).safeParse(fd.get("token"));
   const user = await getUser();
-  const inv = await db.invite.findUnique({ where: { token }, include: { couple: { include: { users: true } } } });
-  const back = (e: string) => redirect(`/convite/${token}?erro=${e}`);
-  if (!inv || inv.expiresAt < new Date() || inv.acceptedAt) return back("invalido");
-  if (inv.invitedById === user.id || user.coupleId === inv.coupleId) redirect("/hoje");
-  if (user.coupleId) return back("ja-vinculado");
-  if (inv.couple.users.some((u) => u.role === inv.role)) return back("ocupado");
-  await db.$transaction([
-    db.user.update({ where: { id: user.id }, data: { coupleId: inv.coupleId, role: inv.role, onboardedAt: null } }),
-    db.invite.update({ where: { id: inv.id }, data: { acceptedAt: new Date(), acceptedById: user.id } }),
-  ]);
-  redirect("/onboarding");
+  if (!token.success) redirect("/");
+  const r = await rateLimit(`accept-invite:${user.id}`, 20, 600); // dificulta adivinhar tokens
+  if (!r.ok) redirect(`/convite/${token.data}?erro=invalido`);
+  const res = await acceptInviteFor(user.id, token.data);
+  if (!res.ok) redirect(`/convite/${token.data}?erro=${res.reason}`);
+  redirect(res.redirect);
 }
 
 async function detach(userId: string) {
@@ -222,6 +231,7 @@ export async function updateMe(fd: FormData) {
 export async function addCycle(fd: FormData) {
   const { user, partner, paused, viewer, other } = await requireCouple();
   if (paused) return;
+  await limited(`add-cycle:${user.id}`, 60, 3600, "/ciclos");
   const start = date.parse(fd.get("start"));
   const endRaw = fd.get("end");
   const end = endRaw ? date.parse(endRaw) : null;
@@ -241,8 +251,9 @@ export async function addCycle(fd: FormData) {
 }
 
 export async function updateCycle(fd: FormData) {
-  const { partner, paused } = await requireCouple();
+  const { user, partner, paused } = await requireCouple();
   if (paused) return;
+  await limited(`add-cycle:${user.id}`, 60, 3600, "/ciclos");
   const id = String(fd.get("id"));
   const start = date.parse(fd.get("start"));
   const endRaw = fd.get("end");
@@ -269,6 +280,7 @@ const allowed = <T extends readonly string[]>(list: T, values: FormDataEntryValu
 export async function saveCheckIn(fd: FormData) {
   const { user, couple, viewer } = await requireCouple();
   if (viewer !== "her") return;
+  await limited(`checkin:${user.id}`, 120, 3600, "/hoje");
   const day = asDate(todayIn(user.timezone));
   const flow = String(fd.get("flow") ?? "");
   const libido = Number(fd.get("libido") ?? 0);
@@ -291,6 +303,7 @@ export async function sendSignal(fd: FormData) {
   const { user, couple, viewer, other, partner } = await requireCouple();
   const kind = String(fd.get("kind"));
   if (viewer !== "her" || !isSignal(kind)) return;
+  await limited(`signal:${user.id}`, 30, 3600, "/hoje");
   const day = asDate(todayIn(user.timezone));
   const recent = await db.signal.findFirst({ where: { coupleId: couple.id, kind, createdAt: { gt: new Date(Date.now() - 30 * 60_000) } } });
   if (recent) return;
@@ -336,10 +349,44 @@ export async function sendTestEmail() {
   const { user, partner, profile, today, viewer, paused } = await requireCouple();
   const status = statusOn(profile, today);
   if (!status || !user.email || paused) return;
+  await limited(`test-email:${user.id}`, 5, 3600, "/perfil");
   const { subject, html } = buildDailyEmail(
     partner.name, status, today,
     { birthDate: partner.birthDate.toISOString().slice(0, 10), birthTime: partner.birthTime },
     viewer,
   );
   await sendEmail(user.email, subject, html);
+}
+
+/* ───────────── Excluir a própria conta (LGPD: direito de eliminação) ───────────── */
+
+/**
+ * Apaga a conta no Clerk e no app. Exige digitar o próprio e-mail.
+ * Quem menstrua leva os dados do casal junto; o parceiro é desvinculado e volta ao cadastro.
+ * Quem acompanha sai e o casal só some se ficar vazio.
+ */
+export async function deleteMyAccount(fd: FormData) {
+  const user = await getUser();
+  await limited(`delete-account:${user.id}`, 5, 3600, "/perfil");
+  if (String(fd.get("confirm") ?? "").trim().toLowerCase() !== user.email.toLowerCase()) redirect("/perfil?erro=confirmacao");
+
+  // Clerk primeiro: se falhar, nada é apagado e a pessoa pode tentar de novo.
+  try {
+    const c = await clerkClient();
+    await c.users.deleteUser(user.clerkId);
+  } catch (e) {
+    console.error("[delete-account] clerk", user.id, e);
+    redirect("/perfil?erro=clerk");
+  }
+
+  const coupleId = user.coupleId;
+  if (coupleId) {
+    if (user.role === "CYCLE") {
+      await db.user.updateMany({ where: { coupleId, id: { not: user.id } }, data: { coupleId: null, role: null, onboardedAt: null } });
+      await db.couple.delete({ where: { id: coupleId } });
+    }
+  }
+  await db.user.delete({ where: { id: user.id } });
+  if (coupleId && (await db.user.count({ where: { coupleId } })) === 0) await db.couple.deleteMany({ where: { id: coupleId } });
+  redirect("/");
 }

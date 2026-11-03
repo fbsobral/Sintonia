@@ -2,6 +2,8 @@ import { db } from "@/lib/db";
 import { composeDaily, dailyInclude } from "@/lib/daily";
 import { todayIn } from "@/lib/cycle";
 import { sendEmail } from "@/lib/email";
+import { bearer, safeEqual } from "@/lib/security";
+import { purgeRateLimits } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +16,7 @@ export const dynamic = "force-dynamic";
  */
 async function run(req: Request) {
   const secret = process.env.CRON_SECRET;
-  if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) {
+  if (!secret || secret.length < 16 || !safeEqual(bearer(req), secret)) {
     return new Response("unauthorized", { status: 401 });
   }
   const users = await db.user.findMany({
@@ -37,6 +39,7 @@ async function run(req: Request) {
       console.error("[cron/daily]", u.id, e);
     }
   }
+  await purgeRateLimits().catch(() => {});
   return Response.json({ sent, skipped, failed });
 }
 

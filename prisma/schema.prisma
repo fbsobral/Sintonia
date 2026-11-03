@@ -142,3 +142,12 @@ model AdminLog {
 
   @@index([createdAt])
 }
+
+/// Limitador de requisições por chave (ex.: "email-invite:<userId>"), compartilhado entre instâncias.
+model RateLimit {
+  key     String   @id
+  count   Int
+  resetAt DateTime
+
+  @@index([resetAt])
+}

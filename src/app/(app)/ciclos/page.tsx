@@ -4,10 +4,11 @@ import { fromDay, statusOn, toDay } from "@/lib/cycle";
 import { PHASES } from "@/lib/tips";
 import { fmt } from "@/lib/format";
 import { addCycle, deleteCycle, updateCycle } from "@/app/actions";
+import { Notice } from "@/components/Notice";
 
 export const metadata = { title: "Ciclos" };
 
-export default async function Ciclos({ searchParams }: { searchParams: Promise<{ m?: string; edit?: string }> }) {
+export default async function Ciclos({ searchParams }: { searchParams: Promise<{ m?: string; edit?: string; erro?: string }> }) {
   const { user, couple, partner, profile, today, viewer, paused } = await requireCouple();
   const her = viewer === "her";
   if (paused) {
@@ -22,7 +23,7 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
     );
   }
   const who = (id: string | null) => (id ? (id === user.id ? "você" : couple.users.find((u) => u.id === id)?.name || (her ? "seu parceiro" : partner.name)) : null);
-  const { m, edit } = await searchParams;
+  const { m, edit, erro } = await searchParams;
   const offset = Math.max(-6, Math.min(12, Number(m) || 0));
 
   const [ty, tm] = today.split("-").map(Number);
@@ -48,6 +49,8 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
         <h1 className="font-display text-3xl">Ciclos</h1>
         <p className="text-sm text-muted">Registre o primeiro dia de cada menstruação. Quanto mais registros, mais precisa a previsão.{couple.users.length > 1 ? " O que um registra aparece para o outro." : ""}</p>
       </header>
+
+      <Notice erro={erro} />
 
       <div className="space-y-5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0">
       <div className="space-y-5">

@@ -2,17 +2,19 @@ import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import { db } from "@/lib/db";
 import { requireCouple } from "@/lib/session";
-import { leaveCouple, removePartner, sendTestEmail, setShare, updateMe, updatePartner, updateSettings } from "@/app/actions";
+import { deleteMyAccount, leaveCouple, removePartner, sendTestEmail, setShare, updateMe, updatePartner, updateSettings } from "@/app/actions";
 import { PartnerFields } from "@/components/PartnerFields";
 import { InviteCard } from "@/components/InviteCard";
 import { Icon } from "@/components/Icon";
 import { fmt } from "@/lib/format";
+import { Notice } from "@/components/Notice";
 
 export const metadata = { title: "Perfil" };
 
 const MODE = { D28: "28 dias", D31: "31 dias", IRREGULAR: "Irregular" } as const;
 
-export default async function Perfil() {
+export default async function Perfil({ searchParams }: { searchParams: Promise<{ erro?: string }> }) {
+  const { erro } = await searchParams;
   const { user, couple, partner, viewer, other, herUser, isAdmin } = await requireCouple();
   const her = viewer === "her";
   const role = her ? "PARTNER" : "CYCLE";
@@ -39,6 +41,8 @@ export default async function Perfil() {
         </div>
         <UserButton />
       </header>
+
+      <Notice erro={erro} />
 
       {isAdmin && (
         <Link href="/admin" className="rise card flex items-center justify-between gap-3 p-4 transition hover:bg-white/10">
@@ -195,6 +199,22 @@ export default async function Perfil() {
               </label>
             )}
             <button className="btn btn-ghost min-h-[44px] px-5">Sair do casal</button>
+          </form>
+        </details>
+      </section>
+
+      {/* Excluir conta (LGPD) */}
+      <section id="excluir" className="rise rounded-3xl border border-rose/40 bg-rose/5 p-5 md:p-6">
+        <details>
+          <summary className="cursor-pointer text-sm font-medium text-rose">Excluir minha conta e meus dados</summary>
+          <p className="mt-3 text-sm leading-relaxed text-muted">
+            {her
+              ? "Apaga a sua conta, o seu ciclo, os check-ins e os sinais. Se você tem um parceiro no casal, ele perde o acesso aos seus dados e volta ao cadastro. Não dá para desfazer."
+              : "Apaga a sua conta e remove você do casal. Os dados dela continuam com ela. Não dá para desfazer."}
+          </p>
+          <form action={deleteMyAccount} className="mt-3 flex flex-col gap-2 sm:flex-row">
+            <input name="confirm" required placeholder={`Digite ${user.email} para confirmar`} className="field flex-1" autoComplete="off" />
+            <button className="btn min-h-[52px] px-6" style={{ background: "var(--rose)", color: "#1a0a12" }}>Excluir tudo</button>
           </form>
         </details>
       </section>
