@@ -11,6 +11,7 @@ import { statusOn, toDay, todayIn } from "@/lib/cycle";
 import { FLOWS, LIBIDO, MOODS, SYMPTOMS, isSignal } from "@/lib/checkin";
 import { emailCycleRegistered, emailInvite, emailSignal } from "@/lib/notify";
 import { fmt } from "@/lib/format";
+import { isTourId } from "@/lib/tours";
 import { rateLimit } from "@/lib/rate-limit";
 import { acceptInviteFor } from "@/lib/invites";
 import { clerkClient } from "@clerk/nextjs/server";
@@ -264,6 +265,27 @@ export async function updateCycle(fd: FormData) {
   await db.cycle.updateMany({ where: { id, partnerId: partner.id }, data: { startDate: asDate(start), endDate: end ? asDate(end) : null } });
   refresh();
   redirect("/ciclos");
+}
+
+/* ───────────── Tutoriais ───────────── */
+
+/** Marca um tutorial como visto (ao concluir ou pular). */
+export async function markTourSeen(id: string) {
+  if (!isTourId(id)) return;
+  const user = await getUser();
+  if (user.tours.includes(id)) return;
+  // As boas-vindas já cobrem o "Hoje", então não repetimos esse guia logo em seguida.
+  const add = (id === "welcome" ? ["welcome", "hoje"] : [id]).filter((t) => !user.tours.includes(t));
+  await db.user.update({ where: { id: user.id }, data: { tours: { push: add } } });
+  refresh();
+}
+
+/** Zera os tutoriais vistos, para a pessoa rever tudo. */
+export async function resetTours() {
+  const user = await getUser();
+  await db.user.update({ where: { id: user.id }, data: { tours: [] } });
+  refresh();
+  redirect("/hoje");
 }
 
 export async function deleteCycle(fd: FormData) {

@@ -11,6 +11,7 @@ const P = {
   arrow: "M5 12h14M13 6l6 6-6 6",
   drop: "M12 3s6 6.5 6 11a6 6 0 01-12 0c0-4.500 6-11 6-11z",
   user: "M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0",
+  star: "M12 3l2.4 5.6L20 9.3l-4.2 3.9 1.2 5.8L12 16l-5 3 1.2-5.8L4 9.3l5.6-.7L12 3z",
   lock: "M6 11h12v9H6zM8 11V8a4 4 0 018 0v3",
 } as const;
 export type IconName = keyof typeof P;

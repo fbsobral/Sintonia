@@ -8,6 +8,7 @@ import { Icon } from "@/components/Icon";
 import { phaseRanges } from "@/lib/cycle";
 import { PHASES, STAGES, stageForViewer } from "@/lib/tips";
 import { SIGNALS } from "@/lib/checkin";
+import type { IconName } from "@/components/Icon";
 
 const first = (s: string) => s.split(/(?<=\.)\s/)[0];
 
@@ -26,7 +27,29 @@ const FAQ = [
   ["Serve como método contraceptivo?", "Não. Métodos baseados em calendário têm taxa de falha relevante. Para contracepção, siga a orientação de um médico."],
   ["E se um de nós quiser sair?", "Qualquer um pode sair do casal em Perfil. Quem menstrua também pode remover o acesso do parceiro e apagar os próprios registros."],
   ["A astrologia tem base científica?", "Não. Ela entra como repertório simbólico para conversar sobre estilos e preferências. O cálculo do ciclo e as orientações de saúde usam fisiologia, e as duas partes ficam separadas."],
+  ["Preciso instalar alguma coisa?", "Não. O Sintonia funciona no navegador do celular ou do computador. No celular, você pode adicioná-lo à tela inicial e usá-lo como um app, com a barra de navegação embaixo."],
+  ["Errei uma data. Dá para corrigir?", "Dá. Em Ciclos, cada registro do histórico pode ser editado ou removido, e as previsões se recalculam na hora para os dois."],
+  ["O app me ensina a usar?", "Sim. Na primeira vez você vê um guia de boas-vindas e, ao abrir cada tela, um guia curto daquele módulo. O botão ? no topo de cada tela reabre o guia, e em Perfil dá para rever tudo."],
   ["Quanto custa?", "Por enquanto, é gratuito."],
+];
+
+const FEATURES: { icon: IconName; title: string; text: string }[] = [
+  { icon: "sun", title: "Hoje, em uma tela", text: "Dia do ciclo, fase, próxima menstruação e fertilidade. Navegue por uma faixa de dias para ver o passado e o futuro." },
+  { icon: "spark", title: "O que ajuda e o que evitar", text: "Cada momento da fase traz tendências, o porquê fisiológico, dicas práticas e o ponto de atenção do dia." },
+  { icon: "chat", title: "Frases para conversar", text: "Ela tem o que dizer para pedir o que precisa. Ele tem como abrir a conversa no tom certo." },
+  { icon: "check", title: "Check-in e sinais", text: "Humor, sintomas, fluxo e desejo em poucos toques, e sinais como “preciso de espaço” que chegam ao parceiro com orientação." },
+  { icon: "calendar", title: "Calendário do ciclo", text: "Veja o mês inteiro colorido por fase, com a ovulação marcada. Registre, edite ou remova menstruações quando precisar." },
+  { icon: "drop", title: "Previsão que aprende", text: "Ciclos de 28, 31 dias ou irregulares. Depois de 3 registros, o app usa a média real e mostra margem de erro e regularidade." },
+  { icon: "heart", title: "Fertilidade e TPM no radar", text: "Janela fértil de cerca de 6 dias e período provável de sintomas pré-menstruais, com critérios clínicos." },
+  { icon: "mail", title: "Resumo e avisos por e-mail", text: "Um resumo diário para cada um, no horário que escolher, e avisos quando o outro registra algo ou envia um sinal." },
+  { icon: "moon", title: "Astrologia e céu do dia", text: "Mapa de cada um, compatibilidade do casal e a Lua do dia cruzada com o ciclo. Leitura simbólica, separada da ciência." },
+];
+
+const TOUR: { icon: IconName; tab: string; title: string; points: string[] }[] = [
+  { icon: "sun", tab: "Hoje", title: "O seu dia", points: ["Anel do ciclo e fase atual", "Check-in, sinais e orientações", "Céu de hoje e próximos dias"] },
+  { icon: "calendar", tab: "Ciclos", title: "O calendário", points: ["Mês colorido por fase", "Registrar, editar e remover", "Duração média e regularidade"] },
+  { icon: "star", tab: "Astro", title: "O céu de vocês", points: ["Mapa de cada um", "Compatibilidade do casal", "Lido da sua perspectiva"] },
+  { icon: "user", tab: "Perfil", title: "Controle e conta", points: ["Pausar o compartilhamento", "E-mails, horário e fuso", "Sair do casal ou excluir a conta"] },
 ];
 
 function Phone({ who, title, children }: { who: "her" | "him"; title: string; children: React.ReactNode }) {
@@ -64,7 +87,11 @@ export default async function Home() {
       <Stars />
       <header className="mx-auto flex max-w-5xl items-center justify-between px-5 pb-2 pt-[max(env(safe-area-inset-top),1.25rem)]">
         <Logo size={30} />
-        <Link href="/sign-in" className="flex min-h-[44px] items-center rounded-full px-4 text-sm text-muted hover:text-ink">Entrar</Link>
+        <nav className="flex items-center" aria-label="Seções">
+          <a href="#recursos" className="hidden min-h-[44px] items-center rounded-full px-4 text-sm text-muted hover:text-ink sm:flex">Recursos</a>
+          <a href="#como-funciona" className="hidden min-h-[44px] items-center rounded-full px-4 text-sm text-muted hover:text-ink sm:flex">Como funciona</a>
+          <Link href="/sign-in" className="flex min-h-[44px] items-center rounded-full px-4 text-sm text-muted hover:text-ink">Entrar</Link>
+        </nav>
       </header>
 
       {/* HERO */}
@@ -227,26 +254,55 @@ export default async function Home() {
       </section>
 
       {/* RECURSOS */}
-      <section className="mx-auto grid max-w-5xl gap-3 px-5 py-6 md:grid-cols-2">
-        <article className="card p-6">
-          <h3 className="font-display text-2xl">Resumo diário, um para cada um</h3>
-          <p className="mt-1 text-muted">Cada pessoa recebe por e-mail, no horário que escolher, o resumo na própria perspectiva: ela, o que está sentindo e o que pedir; ele, o que está acontecendo e como ajudar.</p>
-        </article>
-        <article className="card p-6">
-          <h3 className="font-display text-2xl">Previsão que aprende</h3>
-          <p className="mt-1 text-muted">Ciclos de 28, 31 dias ou irregulares. Quanto mais registros, melhor a estimativa, com margem de erro e regularidade sempre à vista.</p>
-        </article>
-        <article className="card p-6">
-          <h3 className="font-display text-2xl">Fertilidade e TPM no radar</h3>
-          <p className="mt-1 text-muted">Mostra a janela fértil (cerca de 6 dias) e o período provável de sintomas pré-menstruais, com base em critérios clínicos.</p>
-        </article>
-        <article className="card flex items-center gap-5 p-6">
-          <div className="hidden sm:block"><Orbit a="♏︎" b="♋︎" size={120} /></div>
+      <section id="recursos" className="mx-auto max-w-5xl scroll-mt-6 px-5 py-12">
+        <h2 className="font-display max-w-2xl text-3xl leading-tight md:text-4xl">Tudo o que o Sintonia faz</h2>
+        <p className="mt-2 max-w-xl text-muted">Do registro do ciclo à conversa do dia a dia, em um só lugar e com os dois no mesmo ritmo.</p>
+        <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((f) => (
+            <li key={f.title} className="card p-5">
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent/15 text-accent"><Icon name={f.icon} size={20} /></span>
+              <h3 className="font-display mt-3 text-xl">{f.title}</h3>
+              <p className="mt-1 text-[15px] leading-relaxed text-muted">{f.text}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* UM PASSEIO PELO APP */}
+      <section className="mx-auto max-w-5xl py-12">
+        <div className="px-5">
+          <h2 className="font-display max-w-2xl text-3xl leading-tight md:text-4xl">Um app pensado para o celular</h2>
+          <p className="mt-2 max-w-xl text-muted">Quatro telas na barra de baixo, botões grandes para usar com uma mão e a opção de adicionar à tela inicial.</p>
+        </div>
+        <ul className="mt-8 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-4 [scrollbar-width:none] md:grid md:grid-cols-4 md:overflow-visible [&::-webkit-scrollbar]:hidden" aria-label="Telas do app">
+          {TOUR.map((t) => (
+            <li key={t.tab} className="card w-[78%] max-w-[300px] shrink-0 snap-center p-5 sm:w-[46%] md:w-auto md:max-w-none">
+              <div className="flex items-center gap-3">
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-white/12 text-ink shadow-[0_0_24px_-4px_#bfb0ff88]"><Icon name={t.icon} size={22} /></span>
+                <div><p className="eyebrow">{t.tab}</p><h3 className="font-display text-xl leading-tight">{t.title}</h3></div>
+              </div>
+              <ul className="mt-4 space-y-2 text-[15px] leading-snug">
+                {t.points.map((p) => <li key={p} className="flex gap-2.5"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-400/20 text-emerald-300"><Icon name="check" size={12} /></span><span>{p}</span></li>)}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* ONBOARDING GUIADO */}
+      <section className="mx-auto max-w-5xl px-5 py-6">
+        <div className="card grid gap-5 p-6 md:grid-cols-[1fr_auto] md:items-center md:p-8">
           <div>
-            <h3 className="font-display text-2xl">Astrologia para conversar</h3>
-            <p className="mt-1 text-muted">Mapa e compatibilidade de vocês dois, cada um lendo na própria perspectiva. É uma leitura simbólica, usada como repertório e não como ciência.</p>
+            <p className="eyebrow">Sem manual</p>
+            <h2 className="font-display mt-1 text-3xl leading-tight">O app ensina você a usar</h2>
+            <p className="mt-2 max-w-xl text-muted">Na primeira vez, um guia de boas-vindas mostra o essencial. Ao abrir cada tela, um guia curto explica aquele módulo, e você pode pular. O botão <b className="text-ink">?</b> no topo de cada tela reabre o guia quando quiser.</p>
           </div>
-        </article>
+          <ol className="flex gap-1.5 md:w-44 md:flex-col" aria-hidden>
+            {["Boas-vindas", "Guia por tela", "Botão ? sempre à mão"].map((t, n) => (
+              <li key={t} className="flex flex-1 items-center gap-2 rounded-2xl bg-white/5 px-3 py-2 text-xs text-muted md:flex-none"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent/20 text-[11px] font-bold text-accent">{n + 1}</span><span className="leading-tight">{t}</span></li>
+            ))}
+          </ol>
+        </div>
       </section>
 
       {/* FAQ */}

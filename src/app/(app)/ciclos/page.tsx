@@ -3,6 +3,7 @@ import Link from "next/link";
 import { fromDay, statusOn, toDay } from "@/lib/cycle";
 import { PHASES } from "@/lib/tips";
 import { fmt } from "@/lib/format";
+import { ModuleTour } from "@/components/TourHost";
 import { addCycle, deleteCycle, updateCycle } from "@/app/actions";
 import { Notice } from "@/components/Notice";
 
@@ -45,9 +46,12 @@ export default async function Ciclos({ searchParams }: { searchParams: Promise<{
 
   return (
     <main className="space-y-5">
-      <header className="rise">
-        <h1 className="font-display text-3xl">Ciclos</h1>
-        <p className="text-sm text-muted">Registre o primeiro dia de cada menstruação. Quanto mais registros, mais precisa a previsão.{couple.users.length > 1 ? " O que um registra aparece para o outro." : ""}</p>
+      <header className="rise flex items-start justify-between gap-3">
+        <div>
+          <h1 className="font-display text-3xl">Ciclos</h1>
+          <p className="text-sm text-muted">Registre o primeiro dia de cada menstruação. Quanto mais registros, mais precisa a previsão.{couple.users.length > 1 ? " O que um registra aparece para o outro." : ""}</p>
+        </div>
+        <ModuleTour id="ciclos" viewer={viewer} partnerName={partner.name} seen={user.tours} />
       </header>
 
       <Notice erro={erro} />

@@ -4,11 +4,12 @@ import { requireCouple } from "@/lib/session";
 import { InviteCard } from "@/components/InviteCard";
 import { redirect } from "next/navigation";
 import { Notice } from "@/components/Notice";
+import { ModuleTour } from "@/components/TourHost";
 
 export const metadata = { title: "Convidar" };
 
 export default async function Convidar({ searchParams }: { searchParams: Promise<{ novo?: string; erro?: string }> }) {
-  const { couple, viewer, other } = await requireCouple();
+  const { user, couple, partner, viewer, other } = await requireCouple();
   const { novo, erro } = await searchParams;
   if (other) redirect("/hoje");
   const role = viewer === "her" ? "PARTNER" : "CYCLE";
@@ -21,8 +22,13 @@ export default async function Convidar({ searchParams }: { searchParams: Promise
   return (
     <main className="space-y-5">
       <header className="rise">
-        <p className="eyebrow">{novo ? "Tudo pronto" : "Casal"}</p>
-        <h1 className="font-display mt-1 text-4xl">{her ? "Convide seu parceiro" : "Convide sua parceira"}</h1>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="eyebrow">{novo ? "Tudo pronto" : "Casal"}</p>
+            <h1 className="font-display mt-1 text-4xl">{her ? "Convide seu parceiro" : "Convide sua parceira"}</h1>
+          </div>
+          <ModuleTour id="convidar" viewer={viewer} partnerName={partner.name} seen={user.tours} />
+        </div>
         <p className="mt-2 max-w-xl text-muted">
           {her
             ? "Ele passa a entender o seu ciclo, recebe orientações para o dia a dia e vê o que você deixar compartilhado. Você controla tudo em Perfil e pode pausar quando quiser."

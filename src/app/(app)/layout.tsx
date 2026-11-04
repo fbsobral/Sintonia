@@ -2,6 +2,7 @@ import Link from "next/link";
 import { TabBar } from "@/components/TabBar";
 import { Logo } from "@/components/Logo";
 import { isCurrentUserAdmin } from "@/lib/admin";
+import { WelcomeTour } from "@/components/TourHost";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const isAdmin = await isCurrentUserAdmin();
@@ -10,6 +11,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <Link href="/hoje" aria-label="Sintonia" className="mb-3 flex md:hidden"><Logo size={22} /></Link>
       <div className="mx-auto w-full md:max-w-5xl">{children}</div>
       <TabBar isAdmin={isAdmin} />
+      <WelcomeTour />
     </div>
   );
 }

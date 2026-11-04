@@ -10,6 +10,7 @@ import { CheckInForm, CheckInSummary, SignalAlerts, SignalPanel } from "@/compon
 import { fmt, short, shortRange } from "@/lib/format";
 import { skyReading } from "@/lib/sky";
 import { Notice } from "@/components/Notice";
+import { ModuleTour } from "@/components/TourHost";
 
 export const metadata = { title: "Hoje" };
 
@@ -28,7 +29,7 @@ function Meter({ label, value, color }: { label: string; value: number; color: s
 }
 
 export default async function Hoje({ searchParams }: { searchParams: Promise<{ d?: string; erro?: string }> }) {
-  const { couple, partner, profile, today, viewer, other, herUser, paused } = await requireCouple();
+  const { user, couple, partner, profile, today, viewer, other, herUser, paused } = await requireCouple();
   const her = viewer === "her";
   const { d, erro } = await searchParams;
   const valid = !!d && /^\d{4}-\d{2}-\d{2}$/.test(d) && Math.abs(toDay(d) - toDay(today)) <= 365;
@@ -129,9 +130,12 @@ export default async function Hoje({ searchParams }: { searchParams: Promise<{ d
 
   return (
     <main className="space-y-3 sm:space-y-5">
-      <header className="rise">
-        <p className="eyebrow">{isToday ? fmt(sel, { weekday: "long", day: "numeric", month: "long" }) : fmt(sel, { year: "numeric", day: "numeric", month: "long" })}</p>
-        <h1 className="font-display mt-0.5 text-3xl leading-tight sm:mt-1 sm:text-4xl">{title}</h1>
+      <header className="rise flex items-start justify-between gap-3">
+        <div>
+          <p className="eyebrow">{isToday ? fmt(sel, { weekday: "long", day: "numeric", month: "long" }) : fmt(sel, { year: "numeric", day: "numeric", month: "long" })}</p>
+          <h1 className="font-display mt-0.5 text-3xl leading-tight sm:mt-1 sm:text-4xl">{title}</h1>
+        </div>
+        <ModuleTour id="hoje" viewer={viewer} partnerName={partner.name} seen={user.tours} />
       </header>
 
       <Notice erro={erro} />

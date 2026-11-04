@@ -5,6 +5,7 @@ import { compatibility } from "@/lib/synastry";
 import { dateStr } from "@/lib/cycle";
 import { fmt, inDays } from "@/lib/format";
 import { Orbit } from "@/components/Orbit";
+import { ModuleTour } from "@/components/TourHost";
 
 export const metadata = { title: "Astro" };
 
@@ -49,10 +50,13 @@ export default async function Astro({ searchParams }: { searchParams: Promise<{ 
 
   return (
     <main className="space-y-5">
-      <header className="rise">
-        <p className="eyebrow">Astrologia</p>
-        <h1 className="font-display mt-1 text-4xl">O céu de vocês</h1>
-        <p className="mt-1 text-sm text-muted">Hoje: {sky.moonPhase} em {sky.moonSign}</p>
+      <header className="rise flex items-start justify-between gap-3">
+        <div>
+          <p className="eyebrow">Astrologia</p>
+          <h1 className="font-display mt-1 text-4xl">O céu de vocês</h1>
+          <p className="mt-1 text-sm text-muted">Hoje: {sky.moonPhase} em {sky.moonSign}</p>
+        </div>
+        <ModuleTour id="astro" viewer={viewer} partnerName={partner.name} seen={user.tours} />
       </header>
 
       <nav aria-label="Visão" className="rise flex gap-1 rounded-full border border-line bg-white/5 p-1">

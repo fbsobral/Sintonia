@@ -47,6 +47,8 @@ model User {
   sendHour     Int       @default(8)
   timezone     String    @default("America/Sao_Paulo")
   lastEmailOn  String? // YYYY-MM-DD do último envio diário
+  /// Tutoriais já vistos (ids de src/lib/tours.ts), para não repetir.
+  tours        String[]  @default([])
   name         String?
   birthDate    DateTime? @db.Date
   birthTime    String? // HH:mm (opcional)

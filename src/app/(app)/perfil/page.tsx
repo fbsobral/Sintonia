@@ -2,12 +2,13 @@ import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import { db } from "@/lib/db";
 import { requireCouple } from "@/lib/session";
-import { deleteMyAccount, leaveCouple, removePartner, sendTestEmail, setShare, updateMe, updatePartner, updateSettings } from "@/app/actions";
+import { deleteMyAccount, leaveCouple, removePartner, resetTours, sendTestEmail, setShare, updateMe, updatePartner, updateSettings } from "@/app/actions";
 import { PartnerFields } from "@/components/PartnerFields";
 import { InviteCard } from "@/components/InviteCard";
 import { Icon } from "@/components/Icon";
 import { fmt } from "@/lib/format";
 import { Notice } from "@/components/Notice";
+import { ModuleTour } from "@/components/TourHost";
 
 export const metadata = { title: "Perfil" };
 
@@ -39,7 +40,10 @@ export default async function Perfil({ searchParams }: { searchParams: Promise<{
           <p className="eyebrow">Conta</p>
           <h1 className="font-display mt-1 text-4xl">Perfil</h1>
         </div>
-        <UserButton />
+        <div className="flex items-center gap-3">
+          <ModuleTour id="perfil" viewer={viewer} partnerName={partner.name} seen={user.tours} />
+          <UserButton />
+        </div>
       </header>
 
       <Notice erro={erro} />
@@ -181,6 +185,17 @@ export default async function Perfil({ searchParams }: { searchParams: Promise<{
           </label>
           <button className="btn md:col-span-2 md:w-fit md:px-8">Salvar</button>
         </form>
+      </section>
+
+      {/* Tutoriais */}
+      <section className="rise card p-5 md:p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="font-display text-xl">Tutoriais</h2>
+            <p className="text-sm text-muted">Reveja as boas-vindas e o guia de cada tela. O botão ? no topo de cada tela também abre o guia daquele módulo.</p>
+          </div>
+          <form action={resetTours}><button className="btn btn-ghost w-full sm:w-auto">Rever tutoriais</button></form>
+        </div>
       </section>
 
       {/* Sair do casal */}
