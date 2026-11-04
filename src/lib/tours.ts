@@ -27,7 +27,7 @@ export function tourContent(id: TourId, v: Viewer, partnerName: string): TourCon
         steps: [
           {
             icon: "heart",
-            title: "Bem-vinda ao Sintonia",
+            title: her ? "Bem-vinda ao Sintonia" : "Bem-vindo ao Sintonia",
             body: her
               ? "O app mostra, a cada dia, o que está acontecendo no seu corpo e o que pode ajudar. Seu parceiro pode acompanhar junto, e quem decide o que ele vê é você."
               : `O app mostra, a cada dia, o que está acontecendo com ${partnerName} e como você pode ajudar. Em 1 minuto você vê como usar.`,
