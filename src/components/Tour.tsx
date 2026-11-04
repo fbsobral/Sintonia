@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { createPortal } from "react-dom";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Icon } from "./Icon";
 import { TourVisual } from "./TourVisual";
@@ -60,7 +61,7 @@ export function Tour({ id, label, steps, autoOpen = false, button = false }: Pro
           aria-label={`Ver o guia: ${label}`} title="Ver o guia desta tela"
           className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-line bg-white/5 text-base font-semibold text-accent transition hover:bg-white/10 active:scale-95">?</button>
       )}
-      {open && step && (
+      {open && step && createPortal(
         <div className="fixed inset-0 z-[60] flex items-end justify-center md:items-center md:p-6" role="presentation">
           <div className="tour-fade absolute inset-0 bg-black/65 backdrop-blur-sm" onClick={close} aria-hidden />
           <div role="dialog" aria-modal="true" aria-labelledby={`tour-${id}-t`}
@@ -104,7 +105,9 @@ export function Tour({ id, label, steps, autoOpen = false, button = false }: Pro
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        // Fora do cabeçalho da página: a animação de entrada dele (opacidade/transform) deixaria o modal translúcido e fora do lugar.
+        document.body,
       )}
     </>
   );
