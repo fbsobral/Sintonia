@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Icon } from "./Icon";
+import { TourVisual } from "./TourVisual";
 import { markTourSeen } from "@/app/actions";
 import type { TourStep } from "@/lib/tours";
 
@@ -80,7 +81,9 @@ export function Tour({ id, label, steps, autoOpen = false, button = false }: Pro
             </div>
 
             <div key={i} className="rise overflow-y-auto px-6 pb-2 pt-5">
-              <span className="grid h-14 w-14 place-items-center rounded-2xl bg-accent/15 text-accent"><Icon name={step.icon} size={26} /></span>
+              {step.visual
+                ? <TourVisual id={step.visual} />
+                : <span className="grid h-14 w-14 place-items-center rounded-2xl bg-accent/15 text-accent"><Icon name={step.icon} size={26} /></span>}
               <p className="eyebrow mt-4">{label}</p>
               <h2 id={`tour-${id}-t`} className="font-display mt-1 text-[1.65rem] leading-tight">{step.title}</h2>
               <p className="mt-2 text-[16px] leading-relaxed text-muted">{step.body}</p>
