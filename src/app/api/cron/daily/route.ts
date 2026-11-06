@@ -11,7 +11,8 @@ export const dynamic = "force-dynamic";
  * Chamar a cada hora (Coolify Scheduled Task):
  *   curl -fsS -H "Authorization: Bearer $CRON_SECRET" $APP_URL/api/cron/daily
  * Cada pessoa do casal recebe o resumo na própria perspectiva (ela em 1ª pessoa, ele sobre ela),
- * a partir da hora escolhida (no fuso dela) e uma vez por dia. Se ela pausou o compartilhamento,
+ * a partir da hora escolhida (no fuso dela) e uma vez por dia. Quem escolheu "só quando mudar" recebe apenas
+ * quando o momento do Hoje muda em relação ao último e-mail. Se ela pausou o compartilhamento,
  * o parceiro não recebe. Contas suspensas não recebem.
  */
 async function run(req: Request) {
@@ -30,9 +31,11 @@ async function run(req: Request) {
     if (u.lastEmailOn === today || hour < u.sendHour) { skipped++; continue; }
     const mail = composeDaily(u);
     if ("skip" in mail) { skipped++; continue; }
+    // Modo "só quando mudar": se o Hoje continua no mesmo momento do último e-mail, não há nada novo para avisar.
+    if (u.emailOnlyChanges && u.lastStageKey === mail.stageKey) { skipped++; continue; }
     try {
       await sendEmail(u.email, mail.subject, mail.html);
-      await db.user.update({ where: { id: u.id }, data: { lastEmailOn: today } });
+      await db.user.update({ where: { id: u.id }, data: { lastEmailOn: today, lastStageKey: mail.stageKey } });
       sent++;
     } catch (e) {
       failed++;

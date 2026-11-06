@@ -1,6 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { buildProfile, dateStr, statusOn, todayIn } from "./cycle";
-import { buildDailyEmail } from "./email";
+import { buildDailyEmail, stageKeyOf } from "./email";
 
 export const dailyInclude = {
   couple: { include: { users: true, profile: { include: { cycles: { orderBy: { startDate: "asc" } } } } } },
@@ -8,7 +8,7 @@ export const dailyInclude = {
 export type DailyUser = Prisma.UserGetPayload<{ include: typeof dailyInclude }>;
 
 /** Monta o resumo diário de uma pessoa, na perspectiva dela. `skip` explica por que não há e-mail. */
-export function composeDaily(u: DailyUser): { subject: string; html: string; today: string } | { skip: string } {
+export function composeDaily(u: DailyUser): { subject: string; html: string; today: string; stageKey: string } | { skip: string } {
   const couple = u.couple;
   const partner = couple?.profile;
   if (!couple || !partner || !u.role) return { skip: "sem casal" };
@@ -24,6 +24,6 @@ export function composeDaily(u: DailyUser): { subject: string; html: string; tod
   );
   const status = statusOn(profile, today);
   if (!status) return { skip: "sem menstruação registrada" };
-  const { subject, html } = buildDailyEmail(partner.name, status, today, { birthDate: dateStr(partner.birthDate), birthTime: partner.birthTime }, viewer);
-  return { subject, html, today };
+  const { subject, html } = buildDailyEmail(partner.name, status, today, { birthDate: dateStr(partner.birthDate), birthTime: partner.birthTime }, viewer, u.emailOnlyChanges ? "change" : "daily");
+  return { subject, html, today, stageKey: stageKeyOf(status, viewer) };
 }

@@ -175,6 +175,10 @@ export default async function Perfil({ searchParams }: { searchParams: Promise<{
             <input type="checkbox" name="notifyEvents" defaultChecked={user.notifyEvents} className="h-5 w-5 accent-[#b9a8ff]" />
             <span>{her ? "Avisar quando meu parceiro registrar algo" : "Avisar quando ela registrar ou enviar um sinal"}</span>
           </label>
+          <label className="flex min-h-[52px] items-center gap-3 rounded-2xl border border-line bg-white/5 px-4 py-2 md:col-span-2">
+            <input type="checkbox" name="emailOnlyChanges" defaultChecked={user.emailOnlyChanges} className="h-5 w-5 shrink-0 accent-[#b9a8ff]" />
+            <span>Só enviar o resumo quando o “Hoje” mudar<span className="block text-xs text-muted">Em vez de todo dia, você recebe quando entra um novo momento da fase ou a janela de TPM, com o resumo do que mudou.</span></span>
+          </label>
           <label className="block text-sm text-muted">Horário
             <select name="sendHour" defaultValue={user.sendHour} className="field mt-1">
               {Array.from({ length: 24 }, (_, h) => <option key={h} value={h}>{String(h).padStart(2, "0")}:00</option>)}

@@ -11,13 +11,17 @@ export type PartnerBirth = { birthDate: string; birthTime?: string | null };
 
 const REG = { regular: "regular", moderada: "moderadamente variável", irregular: "irregular", desconhecida: "sem dados suficientes" } as const;
 
-export function buildDailyEmail(partnerName: string, s: Status, today: string, birth: PartnerBirth, viewer: "him" | "her" = "him") {
+/** Identifica o "momento" mostrado no Hoje: muda quando o texto do dia muda (novo momento da fase ou entrada na janela de TPM). */
+export const stageKeyOf = (s: Status, viewer: "him" | "her") => `${stageForViewer(s.phase, s.phaseDay, s.phaseLength, viewer).name}|${s.pms ? "tpm" : ""}`;
+
+export function buildDailyEmail(partnerName: string, s: Status, today: string, birth: PartnerBirth, viewer: "him" | "her" = "him", kind: "daily" | "change" = "daily") {
   const her = viewer === "her";
   const p = PHASES[s.phase];
   const st = stageForViewer(s.phase, s.phaseDay, s.phaseLength, viewer);
   const talk = pick(st.talk, toDay(today));
   const li = (items: string[]) => items.map((i) => `<li style="margin:0 0 8px">${i}</li>`).join("");
-  const subject = her ? `Hoje: ${st.name}${s.pms ? " · janela de TPM" : ""}` : `${partnerName} hoje: ${st.name}${s.pms ? " · janela de TPM" : ""}`;
+  const base = her ? `Hoje: ${st.name}${s.pms ? " · janela de TPM" : ""}` : `${partnerName} hoje: ${st.name}${s.pms ? " · janela de TPM" : ""}`;
+  const subject = kind === "change" ? `Novo momento · ${base}` : base;
   const [r0, r1] = s.nextRange;
   const next =
     s.daysToPeriod <= 0 ? "A menstruação está prevista para hoje." :
@@ -34,7 +38,7 @@ export function buildDailyEmail(partnerName: string, s: Status, today: string, b
   const h3 = "margin:26px 0 6px;font-size:15px";
   const html = `<!doctype html><html><body style="margin:0;background:#0F0D1F;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#EDEAF7">
 <div style="max-width:540px;margin:0 auto;padding:28px 20px">
-  <div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#9A95B8">Sintonia · resumo do dia</div>
+  <div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#9A95B8">Sintonia · ${kind === "change" ? "novo momento no Hoje" : "resumo do dia"}</div>
   <div style="margin-top:14px;padding:22px;border-radius:20px;background:${p.soft};border:1px solid ${p.color}55">
     <div style="font-size:12px;color:${p.color};font-weight:700;text-transform:uppercase;letter-spacing:.08em">Fase ${p.name} · dia ${s.cycleDay} do ciclo${s.projected ? " (estimado)" : ""}</div>
     <div style="font-size:26px;font-weight:700;margin:6px 0 6px">${st.name}</div>

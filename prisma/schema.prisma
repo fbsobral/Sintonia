@@ -47,6 +47,10 @@ model User {
   sendHour     Int       @default(8)
   timezone     String    @default("America/Sao_Paulo")
   lastEmailOn  String? // YYYY-MM-DD do último envio diário
+  /// Só envia o resumo quando o conteúdo do "Hoje" muda de momento (em vez de todo dia).
+  emailOnlyChanges Boolean @default(false)
+  /// Momento do "Hoje" no último e-mail enviado (compara para saber se mudou).
+  lastStageKey String?
   /// Tutoriais já vistos (ids de src/lib/tours.ts), para não repetir.
   tours        String[]  @default([])
   name         String?

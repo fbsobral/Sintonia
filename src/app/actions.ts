@@ -362,7 +362,7 @@ export async function updateSettings(fd: FormData) {
   }
   await db.user.update({
     where: { id: user.id },
-    data: { sendHour: s.sendHour, timezone: s.timezone, emailDaily: fd.get("emailDaily") === "on", notifyEvents: fd.get("notifyEvents") === "on" },
+    data: { sendHour: s.sendHour, timezone: s.timezone, emailDaily: fd.get("emailDaily") === "on", emailOnlyChanges: fd.get("emailOnlyChanges") === "on", notifyEvents: fd.get("notifyEvents") === "on" },
   });
   refresh();
 }
